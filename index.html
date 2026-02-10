@@ -169,6 +169,43 @@
                                                 일본 전통 예술</option>
                                         </select>
                                     </div>
+                                    <div class="field-box full-width">
+                                        <button type="button" class="btn-toggle-pro" id="btn-toggle-pro">
+                                            <span>Advanced Pro Options</span>
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                                <path d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </button>
+                                        <div class="pro-options-grid" id="pro-options">
+                                            <div class="field-box">
+                                                <label>Negative Prompt (Exclude)</label>
+                                                <textarea id="neg-prompt"
+                                                    placeholder="ugly, blurry, low quality, distorted..."></textarea>
+                                            </div>
+                                            <div class="pro-row">
+                                                <div class="field-box">
+                                                    <label>Aspect Ratio</label>
+                                                    <select id="sel-aspect">
+                                                        <option value="--ar 1:1">1:1 (Square)</option>
+                                                        <option value="--ar 16:9">16:9 (Widescreen)</option>
+                                                        <option value="--ar 9:16">9:16 (Portrait)</option>
+                                                        <option value="--ar 4:3">4:3 (Classic)</option>
+                                                        <option value="--ar 3:2">3:2 (Photo)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="field-box">
+                                                    <label>AI Engine Preset</label>
+                                                    <select id="sel-engine">
+                                                        <option value="midjourney">Midjourney v6.0</option>
+                                                        <option value="dalle">DALL-E 3 Optimization</option>
+                                                        <option value="stable">Stable Diffusion XL</option>
+                                                        <option value="leonardo">Leonardo.ai Kino</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="field-box">
                                         <label>Atmosphere</label>
                                         <select id="sel-light">

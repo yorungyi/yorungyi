@@ -39,6 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const refreshGallery = document.getElementById('refresh-gallery');
     const exploreMore = document.getElementById('explore-more');
 
+    // Pro Options Selectors
+    const btnTogglePro = document.getElementById('btn-toggle-pro');
+    const proOptionsGrid = document.getElementById('pro-options');
+    const negPromptInput = document.getElementById('neg-prompt');
+    const selAspect = document.getElementById('sel-aspect');
+    const selEngine = document.getElementById('sel-engine');
+
     // 3. Theme Management
     function initTheme() {
         document.documentElement.setAttribute('data-theme', state.theme);
@@ -88,6 +95,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     [selSubject, selStyle, selLight].forEach(el => el.addEventListener('change', updatePrompt));
+
+    // Pro Options Toggle
+    btnTogglePro.addEventListener('click', () => {
+        proOptionsGrid.classList.toggle('active');
+        btnTogglePro.querySelector('svg').style.transform = proOptionsGrid.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+    });
 
     // 6. AI Prompt Enhancement Engine
     function enhancePrompt(rawInput) {
@@ -157,7 +170,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        const enhancedPrompt = `${detectedSubject} featuring ${rawInput.trim()}, ${detectedStyle}, ${detectedAtmosphere}, masterfully crafted, award-winning quality`;
+        const negInput = negPromptInput.value.trim();
+        const aspectVal = selAspect.value;
+        const engineLabel = selEngine.options[selEngine.selectedIndex].text;
+
+        let enhancedPrompt = `${detectedSubject} featuring ${rawInput.trim()}, ${detectedStyle}, ${detectedAtmosphere}, masterfully crafted, award-winning quality`;
+
+        // Append Pro Parameters
+        if (negInput) enhancedPrompt += ` --no ${negInput}`;
+        enhancedPrompt += ` ${aspectVal}`;
+        enhancedPrompt += ` [Optimized for ${engineLabel}]`;
 
         // Typing animation
         outputText.value = '';
@@ -444,23 +466,73 @@ document.addEventListener('DOMContentLoaded', () => {
 
         feedContainer.innerHTML = itemsToShow.map(item => `
             <div class="card-item" data-id="${item.id}">
+                <button class="btn-remix" onclick="window.remixPrompt('${item.prompt.replace(/'/g, "\\'")}')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M21 2v6h-6M3 22v-6h6M21 13a9 9 0 1 1-3-7.7L21 8M3 11a9 9 0 0 1 3 7.7L3 16" />
+                    </svg>
+                    Remix
+                </button>
                 <img src="${item.url}" class="card-img" alt="${item.title}" loading="lazy">
                 <div class="card-content">
-                    <h5>${item.title}</h5>
-                    <p>#${item.category}</p>
+                    <div class="card-header-info">
+                        <span class="category-tag">${item.category}</span>
+                        <h5 class="card-title">${item.title}</h5>
+                    </div>
+                    <p class="prompt-preview">${item.prompt}</p>
+                    <button class="btn-copy-mini">Copy Prompt</button>
                 </div>
             </div>
         `).join('');
 
         // Add click listeners to each card
         document.querySelectorAll('.card-item').forEach(card => {
-            card.addEventListener('click', () => {
+            card.addEventListener('click', (e) => {
+                // Prevent clicks on buttons inside the card from triggering the card's main click
+                if (e.target.closest('.btn-remix') || e.target.closest('.btn-copy-mini')) {
+                    e.stopPropagation();
+                    return;
+                }
                 const id = parseInt(card.getAttribute('data-id'));
                 const item = state.galleryData.find(d => d.id === id);
                 if (item) showPromptModal(item);
             });
         });
+
+        // Add click listeners for the new mini copy buttons
+        document.querySelectorAll('.btn-copy-mini').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent card click
+                const cardItem = e.target.closest('.card-item');
+                if (cardItem) {
+                    const id = parseInt(cardItem.getAttribute('data-id'));
+                    const item = state.galleryData.find(d => d.id === id);
+                    if (item) {
+                        navigator.clipboard.writeText(item.prompt).then(() => {
+                            showToast('Prompt copied from gallery!');
+                        });
+                    }
+                }
+            });
+        });
     }
+
+    // Remix Global Function
+    window.remixPrompt = function (promptText) {
+        // Switch to Studio View
+        const studioBtn = document.querySelector('[data-view="studio"]');
+        if (studioBtn) studioBtn.click();
+
+        // Populate and Enhance
+        userInput.value = promptText;
+        showToast('✨ Remixed to Studio!');
+
+        // Auto-scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Brief pulse effect on input
+        userInput.style.boxShadow = '0 0 20px var(--primary)';
+        setTimeout(() => { userInput.style.boxShadow = ''; }, 1000);
+    };
 
     // 9. Gallery Controls
     refreshGallery.addEventListener('click', () => {
