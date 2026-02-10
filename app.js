@@ -31,9 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const libraryList = document.getElementById('library-list');
 
     const feedContainer = document.getElementById('feed-container');
-    const urlInput = document.getElementById('url-input');
-    const btnGo = document.getElementById('btn-go');
-    const mainFrame = document.getElementById('main-frame');
 
     const toast = document.getElementById('toast');
     const toastMsg = document.getElementById('toast-msg');
@@ -66,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetPanel = document.getElementById(`${target}-view`);
             if (targetPanel) targetPanel.classList.add('active');
 
-            const titles = { studio: 'Prompt Studio', discovery: 'Discovery Gallery', navigator: 'Web Navigator' };
+            const titles = { studio: 'Prompt Studio', discovery: 'Discovery Gallery' };
             viewTitle.textContent = titles[target] || 'ProVision AI';
 
             showToast(`Navigated to ${titles[target]}`);
@@ -468,16 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 11. Web Navigator Logic
-    btnGo.addEventListener('click', () => {
-        let url = urlInput.value.trim();
-        if (!url) return;
-        if (!url.startsWith('http')) url = 'https://' + url;
-        mainFrame.src = url;
-        showToast(`Loading ${url}...`);
-    });
-
-    // 12. Toast Notification
+    // 11. Toast Notification
     let toastTimer;
     function showToast(msg) {
         clearTimeout(toastTimer);
