@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const selStyle = document.getElementById('sel-style');
     const selLight = document.getElementById('sel-light');
     const outputText = document.getElementById('output-text');
+    const userInput = document.getElementById('user-input');
+    const btnEnhance = document.getElementById('btn-enhance');
 
     const btnCopy = document.getElementById('btn-copy');
     const btnSave = document.getElementById('btn-save');
@@ -89,6 +91,102 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     [selSubject, selStyle, selLight].forEach(el => el.addEventListener('change', updatePrompt));
+
+    // 6. AI Prompt Enhancement Engine
+    function enhancePrompt(rawInput) {
+        if (!rawInput || rawInput.trim().length === 0) {
+            showToast('⚠️ Please describe what you want to create');
+            return;
+        }
+
+        const input = rawInput.toLowerCase();
+
+        // Keyword analysis
+        const subjectKeywords = {
+            architecture: ['building', '건물', 'architecture', '건축', 'tower', '타워', 'house', '집', 'castle', '성'],
+            nature: ['mountain', '산', 'forest', '숲', 'ocean', '바다', 'sky', '하늘', 'sunset', '석양', 'lake', '호수'],
+            portrait: ['person', '사람', 'face', '얼굴', 'portrait', '초상', 'warrior', '전사', 'samurai', '사무라이'],
+            fantasy: ['dragon', '드래곤', 'wizard', '마법사', 'magic', '마법', 'phoenix', '불사조'],
+            technology: ['robot', '로봇', 'cyber', '사이버', 'futuristic', '미래', 'tech', '기술']
+        };
+
+        const styleKeywords = {
+            realistic: ['photo', '사진', 'realistic', '사실적', 'detailed', '세밀한'],
+            painting: ['painting', '그림', 'oil', '유화', 'watercolor', '수채화'],
+            animation: ['anime', '애니메', 'cartoon', '만화', 'pixar', '픽사'],
+            cinematic: ['movie', '영화', 'cinema', '시네마', 'dramatic', '극적']
+        };
+
+        const atmosphereKeywords = {
+            golden: ['sunset', '석양', 'warm', '따뜻한', 'gold', '금빛'],
+            dark: ['dark', '어두운', 'night', '밤', 'noir', '누아르'],
+            mystical: ['magical', '마법', 'mystical', '신비로운', 'enchanted', '마법의']
+        };
+
+        let detectedSubject = 'A cinematic scene';
+        let detectedStyle = 'hyper-realistic digital art, 8k resolution';
+        let detectedAtmosphere = 'cinematic lighting, dramatic mood';
+
+        // Detect subject
+        for (const [category, keywords] of Object.entries(subjectKeywords)) {
+            if (keywords.some(kw => input.includes(kw))) {
+                if (category === 'architecture') detectedSubject = 'An architectural masterpiece';
+                else if (category === 'nature') detectedSubject = 'A breathtaking natural landscape';
+                else if (category === 'portrait') detectedSubject = 'A powerful portrait';
+                else if (category === 'fantasy') detectedSubject = 'An epic fantasy scene';
+                else if (category === 'technology') detectedSubject = 'A cutting-edge technological vision';
+                break;
+            }
+        }
+
+        // Detect style
+        for (const [style, keywords] of Object.entries(styleKeywords)) {
+            if (keywords.some(kw => input.includes(kw))) {
+                if (style === 'realistic') detectedStyle = 'photorealistic rendering, ultra-detailed, 8k';
+                else if (style === 'painting') detectedStyle = 'oil painting style, rich brushstrokes';
+                else if (style === 'animation') detectedStyle = 'Pixar animation style, vibrant colors';
+                else if (style === 'cinematic') detectedStyle = 'cinematic composition, Unreal Engine 5';
+                break;
+            }
+        }
+
+        // Detect atmosphere
+        for (const [atm, keywords] of Object.entries(atmosphereKeywords)) {
+            if (keywords.some(kw => input.includes(kw))) {
+                if (atm === 'golden') detectedAtmosphere = 'golden hour lighting, warm glow';
+                else if (atm === 'dark') detectedAtmosphere = 'high contrast noir, dramatic shadows';
+                else if (atm === 'mystical') detectedAtmosphere = 'ethereal glow, magical atmosphere';
+                break;
+            }
+        }
+
+        const enhancedPrompt = `${detectedSubject} featuring ${rawInput.trim()}, ${detectedStyle}, ${detectedAtmosphere}, masterfully crafted, award-winning quality`;
+
+        // Typing animation
+        outputText.value = '';
+        let i = 0;
+        const timer = setInterval(() => {
+            if (i < enhancedPrompt.length) {
+                outputText.value += enhancedPrompt[i];
+                i++;
+            } else {
+                clearInterval(timer);
+            }
+        }, 5);
+
+        showToast('✨ AI has enhanced your prompt!');
+    }
+
+    btnEnhance.addEventListener('click', () => {
+        enhancePrompt(userInput.value.trim());
+    });
+
+    userInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            btnEnhance.click();
+        }
+    });
 
     // 6. User Actions
     btnCopy.addEventListener('click', () => {
