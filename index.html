@@ -265,38 +265,34 @@
                                         <button id="btn-enhance" class="btn btn-enhance">✨ AI로 프롬프트 최적화</button>
                                     </div>
                                 </div>
+
+                                <div class="result-container">
+                                    <textarea id="output-text" placeholder="Generated prompt will appear here..."
+                                        readonly></textarea>
+                                    <div class="button-row">
+                                        <button id="btn-copy" class="btn btn-primary">Copy Prompt 📋</button>
+                                        <button id="btn-save" class="btn btn-secondary">Save to Library 💾</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <aside class="utility-rail">
+                            <div class="rail-card">
                                 <h4>My Library</h4>
                                 <div id="library-list" class="item-list">
-                                    <section>
-                                        <h3>3. 모델별 최적화 (Midjourney vs DALL-E)</h3>
-                                        <p>미드저니는 파라미터를 통한 세밀한 제어가 강점이며, DALL-E 3는 복잡한 문장 구조를 이해하는 'Prompt Adherence'가 최고
-                                            수준입니다.</p>
-                                    </section>
-
-                                    <section>
-                                        <h3>4. 전문가의 팁: 조명과 재질</h3>
-                                        <p>이미지의 분위기를 결정하는 것은 80%가 조명입니다. <code>Volumetric lighting</code>,
-                                            <code>Octane render</code>, <code>Ray tracing</code> 등의 키워드를 섞어보세요.</p>
-                                    </section>
-
-                                    <section>
-                                        <h3>5. 프롬프트 다이어트</h3>
-                                        <p>필요 없는 단어는 과감히 삭제하세요. 형용사보다는 강력한 명사와 동사 위주로 구성하는 것이 AI의 풍부한 해석을 돕습니다.</p>
-                                    </section>
-
-                                    <div class="ad-unit content-ad">
-                                        <span class="ad-label">SPONSORED</span>
-                                        <div class="ad-mock-up">Contextual Google AdSense</div>
-                                    </div>
+                                    <div class="empty-list">No saved prompts yet.</div>
                                 </div>
-                                <div class="rail-card ad-unit">
-                                    <div class="ad-placeholder-sidebar">
-                                        <span class="ad-label">ADVERTISEMENT</span>
-                                        <div class="ad-mock-up">Google AdSense</div>
-                                    </div>
-                                </div>
-                                </aside>
                             </div>
+
+                            <div class="rail-card ad-unit">
+                                <div class="ad-placeholder-sidebar">
+                                    <span class="ad-label">ADVERTISEMENT</span>
+                                    <div class="ad-mock-up">Google AdSense</div>
+                                </div>
+                            </div>
+                        </aside>
+                    </div>
                 </section>
 
                 <!-- DISCOVERY VIEW (GALLERY) -->
@@ -325,9 +321,77 @@
                     </div>
                 </section>
 
+                <!-- GUIDE VIEW (EDUCATION) -->
+                <section id="guide-view" class="view-panel">
+                    <div class="guide-container">
+                        <article class="pro-guide">
+                            <header class="guide-header">
+                                <span class="badge">Professional Resource</span>
+                                <h1>Mastering AI Prompt Engineering</h1>
+                                <p>프롬프트 엔지니어링의 기초부터 전문가 레벨까지 가이드합니다.</p>
+                            </header>
+
+                            <div class="guide-content">
+                                <section>
+                                    <h3>1. 원자적 프롬프트 구조 (Atomic Structure)</h3>
+                                    <p>좋은 프롬프트는 <strong>[주체] + [액션] + [스타일] + [조명] + [해상도]</strong>로 구성됩니다. 무작위적인 단어
+                                        나열보다 구조화된 문장이 훨씬 더 정교한 결과를 만들어냅니다.</p>
+                                    <div class="structure-card">
+                                        Subject, Style & Medium, Atmosphere, masterfully crafted, hyper-detailed, 8k
+                                    </div>
+                                </section>
+
+                                <section>
+                                    <h3>2. 네거티브 프롬프트의 힘</h3>
+                                    <p>무엇을 '넣을까'만큼 중요한 것이 무엇을 '뺄까'입니다. <code>--no</code> 파라미터를 사용하여 원치 않는 왜곡이나 노이즈를 사전에
+                                        차단하세요.</p>
+                                </section>
+
+                                <section>
+                                    <h3>3. 모델별 최적화 (Midjourney vs DALL-E)</h3>
+                                    <p>미드저니는 파라미터를 통한 세밀한 제어가 강점이며, DALL-E 3는 복잡한 문장 구조를 이해하는 'Prompt Adherence'가 최고
+                                        수준입니다.</p>
+                                </section>
+
+                                <section>
+                                    <h3>4. 전문가의 팁: 조명과 재질</h3>
+                                    <p>이미지의 분위기를 결정하는 것은 80%가 조명입니다. <code>Volumetric lighting</code>,
+                                        <code>Octane render</code>, <code>Ray tracing</code> 등의 키워드를 섞어보세요.
+                                    </p>
+                                </section>
+
+                                <section>
+                                    <h3>5. 프롬프트 다이어트</h3>
+                                    <p>필요 없는 단어는 과감히 삭제하세요. 형용사보다는 강력한 명사와 동사 위주로 구성하는 것이 AI의 풍부한 해석을 돕습니다.</p>
+                                </section>
+
+                                <div class="ad-unit content-ad">
+                                    <span class="ad-label">SPONSORED</span>
+                                    <div class="ad-mock-up">Contextual Google AdSense</div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
             </div> <!-- .scroll-area -->
         </main> <!-- .main-content -->
     </div> <!-- .app-container -->
+
+    <!-- PRIVACY MODAL -->
+    <div id="modal-privacy" class="modal">
+        <div class="modal-content">
+            <header>
+                <h3>Privacy Policy & Terms</h3>
+                <button class="btn-close-modal">&times;</button>
+            </header>
+            <div class="modal-body">
+                <p>본 서비스는 사용자의 프롬프트 데이터를 별도로 저장하거나 수집하지 않습니다. 모든 데이터는 브라우저의 로컬 스토리지에만 저장됩니다.</p>
+                <hr style="margin: 16px 0; border: none; border-top: 1px solid var(--border);">
+                <p>서비스 이용 시 생성된 이미지와 프롬프트의 저작권 및 책임은 전적으로 사용자에게 있습니다. AI 라이선스 정책을 준수해 주세요.</p>
+            </div>
+        </div>
+    </div>
 
     <!-- CLEAN NOTIFICATION -->
     <div id="toast" class="toast-system hidden">
