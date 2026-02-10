@@ -403,8 +403,8 @@ h4 {
 }
 
 /* Discovery Feed */
-.discovery-preview {
-    margin-top: 40px;
+.discovery-page {
+    padding-bottom: 40px;
 }
 
 .preview-header {

@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         theme: localStorage.getItem('provision_theme') || 'light',
         currentView: 'studio',
         galleryData: generateGalleryData(),
-        displayLimit: 6,
+        displayLimit: 12,
         isExpanded: false
     };
 
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetPanel = document.getElementById(`${target}-view`);
             if (targetPanel) targetPanel.classList.add('active');
 
-            const titles = { studio: 'Prompt Studio', discovery: 'Community Discovery', navigator: 'Web Navigator' };
+            const titles = { studio: 'Prompt Studio', discovery: 'Discovery Gallery', navigator: 'Web Navigator' };
             viewTitle.textContent = titles[target] || 'ProVision AI';
 
             showToast(`Navigated to ${titles[target]}`);
