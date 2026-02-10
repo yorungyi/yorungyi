@@ -4,6 +4,13 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 0. PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+            .then(() => console.log('🐟 코다리 부장: PWA 엔진 가동! (Service Worker Registered)'))
+            .catch(err => console.error('PWA Fail:', err));
+    }
+
     console.log('🐟 코다리 부장: 시스템 가동 준비 완료! 충성!');
 
     // DOM Elements
