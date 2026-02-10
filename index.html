@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google AdSense 수익화 앱브라우저 | 대표님 전용</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts: Inter & Outfit for premium look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Outfit:wght@500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">🐟</span>
+                <span class="logo-text">KODARI AdSense</span>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-item active" data-view="dashboard">
+                    <span class="icon">📊</span> 대시보드
+                </button>
+                <button class="nav-item" data-view="browser">
+                    <span class="icon">🌐</span> 앱브라우저
+                </button>
+                <button class="nav-item" data-view="analytics">
+                    <span class="icon">📈</span> 수익 분석
+                </button>
+                <button class="nav-item" data-view="settings">
+                    <span class="icon">⚙️</span> 설정
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="rep-card">
+                    <div class="rep-info">
+                        <span class="rep-label">AI 1인 기업 대표님</span>
+                        <span class="rep-status">Online 🟢</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-nav">
+                <h1 id="view-title">수익화 대시보드</h1>
+                <div class="user-actions">
+                    <button class="btn btn-primary">수익 새로고침</button>
+                </div>
+            </header>
+
+            <section id="content-area" class="content-area">
+                <!-- AI Prompt Builder View (Default) -->
+                <div id="dashboard-view" class="view">
+                    <div class="prompt-builder-container">
+                        <div class="builder-header">
+                            <h2>✨ AI Prompt 빌더</h2>
+                            <p>클릭 몇 번으로 전문가급 미드저니/DALL-E 프롬프트를 완성하세요.</p>
+                        </div>
+                        <div class="builder-grid">
+                            <div class="builder-group">
+                                <label>주제 (Subject)</label>
+                                <select id="prompt-subject">
+                                    <option value="A majestic cyberpunk city">사이버펑크 도시</option>
+                                    <option value="A mystical forest with glowing spirits">선령이 깃든 숲</option>
+                                    <option value="An astronaut riding a whale in space">우주에서 고래를 탄 우주비행사</option>
+                                    <option value="A hyper-realistic portrait of a cyborg">하이퍼리얼 시보그 초상화</option>
+                                </select>
+                            </div>
+                            <div class="builder-group">
+                                <label>화풍 (Art Style)</label>
+                                <select id="prompt-style">
+                                    <option value="Digital Art, Unreal Engine 5">디지털 아트 (UE5)</option>
+                                    <option value="Oil painting, van gogh style">유화 (고흐 화풍)</option>
+                                    <option value="Cinematic lighting, 8k, photorealistic">시네마틱 실사</option>
+                                    <option value="Cute 3D render, Pixar style">귀여운 3D (픽사 스타일)</option>
+                                </select>
+                            </div>
+                            <div class="builder-group">
+                                <label>조명 (Lighting)</label>
+                                <select id="prompt-lighting">
+                                    <option value="Volumetric lighting">입체적 조명</option>
+                                    <option value="Golden hour warmth">골든 아워 (따뜻함)</option>
+                                    <option value="Neon glow, moody">네온 글로우 (무드)</option>
+                                    <option value="Soft natural light">부드러운 자연광</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="result-area">
+                            <textarea id="final-prompt" readonly placeholder="빌더를 선택하면 여기에 프롬프트가 생성됩니다..."></textarea>
+                            <button id="copy-prompt-btn" class="btn btn-primary">프롬프트 복사하기 📋</button>
+                        </div>
+                    </div>
+
+                    <div class="gallery-section">
+                        <div class="section-header">
+                            <h3>🔥 실시간 인기 AI 아트 (수익화 연결)</h3>
+                            <div class="gallery-filters">
+                                <button class="filter-btn active">전체</option>
+                                    <button class="filter-btn">실사</button>
+                                    <button class="filter-btn">애니</button>
+                                    <button class="filter-btn">추상화</button>
+                            </div>
+                        </div>
+                        <div id="ai-gallery" class="gallery-grid">
+                            <!-- JS에서 이미지 로드 예정 -->
+                            <div class="gallery-item-skeleton">이미지 낚아올리는 중... 🎣</div>
+                            <div class="gallery-item-skeleton">이미지 낚아올리는 중... 🎣</div>
+                            <div class="gallery-item-skeleton">이미지 낚아올리는 중... 🎣</div>
+                            <div class="gallery-item-skeleton">이미지 낚아올리는 중... 🎣</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Browser View (Hidden initially) -->
+                <div id="browser-view" class="view hidden">
+                    <div class="browser-controls">
+                        <input type="text" id="url-input" placeholder="이동할 URL을 입력하세요 (예: https://adsense.google.com)">
+                        <button id="go-btn" class="btn btn-secondary">이동</button>
+                    </div>
+                    <div class="browser-frame-container">
+                        <iframe id="browser-frame" src="about:blank" frameborder="0"></iframe>
+                        <div id="browser-placeholder" class="frame-overlay">
+                            <p>브라우저를 활성화하려면 URL을 입력하십시오. 🌐</p>
+                            <small>※ 일부 보안 강화 사이트는 프레임 내 표시가 제한될 수 있습니다.</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal / Notifications (Kodari Support) -->
+    <div id="kodari-toast" class="toast hidden">
+        <div class="toast-content">
+            <img src="https://raw.githubusercontent.com/wonseokjung/solopreneur-ai-agents/main/agents/kodari/assets/kodari_salute.png"
+                alt="코다리" class="toast-img">
+            <p id="toast-message">충성! 부장 코다리입니다!</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
