@@ -4,7 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProVision AI | Premium Prompt Studio</title>
+    <title>ProVision AI | Premium Prompt Studio & AI Art Guide</title>
+    <meta name="description"
+        content="Master AI prompt engineering with ProVision AI. Expert tools for Midjourney, DALL-E, and more. High-quality prompt gallery and professional builder.">
+    <meta name="keywords"
+        content="AI prompt generator, prompt engineering guide, Midjourney prompts, DALL-E 3 prompts, AI art tools">
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700&display=swap"
@@ -38,6 +42,13 @@
                     </svg>
                     <span>Discovery</span>
                 </button>
+                <button class="menu-item" data-view="guide">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </svg>
+                    <span>Guide</span>
+                </button>
             </div>
             <div class="nav-bottom">
                 <div class="profile-card">
@@ -46,6 +57,11 @@
                         <p class="p-name">Representative</p>
                         <p class="p-role">Verified Partner</p>
                     </div>
+                </div>
+                <div class="nav-footer-links">
+                    <button id="btn-privacy">Privacy</button>
+                    <span class="dot">·</span>
+                    <button id="btn-terms">Terms</button>
                 </div>
             </div>
         </nav>
@@ -249,33 +265,38 @@
                                         <button id="btn-enhance" class="btn btn-enhance">✨ AI로 프롬프트 최적화</button>
                                     </div>
                                 </div>
-                                <div class="result-container">
-                                    <textarea id="output-text" readonly
-                                        placeholder="빌더 옵션을 선택하면 결과가 여기에 표시됩니다."></textarea>
-                                    <div class="button-row">
-                                        <button id="btn-copy" class="btn btn-primary">Copy Prompt 📋</button>
-                                        <button id="btn-save" class="btn btn-secondary">Save to Library ⭐</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- RIGHT SIDEBAR (LIBRARY) -->
-                        <aside class="utility-rail">
-                            <div class="rail-card">
                                 <h4>My Library</h4>
                                 <div id="library-list" class="item-list">
-                                    <div class="empty-list">No saved prompts yet.</div>
+                                    <section>
+                                        <h3>3. 모델별 최적화 (Midjourney vs DALL-E)</h3>
+                                        <p>미드저니는 파라미터를 통한 세밀한 제어가 강점이며, DALL-E 3는 복잡한 문장 구조를 이해하는 'Prompt Adherence'가 최고
+                                            수준입니다.</p>
+                                    </section>
+
+                                    <section>
+                                        <h3>4. 전문가의 팁: 조명과 재질</h3>
+                                        <p>이미지의 분위기를 결정하는 것은 80%가 조명입니다. <code>Volumetric lighting</code>,
+                                            <code>Octane render</code>, <code>Ray tracing</code> 등의 키워드를 섞어보세요.</p>
+                                    </section>
+
+                                    <section>
+                                        <h3>5. 프롬프트 다이어트</h3>
+                                        <p>필요 없는 단어는 과감히 삭제하세요. 형용사보다는 강력한 명사와 동사 위주로 구성하는 것이 AI의 풍부한 해석을 돕습니다.</p>
+                                    </section>
+
+                                    <div class="ad-unit content-ad">
+                                        <span class="ad-label">SPONSORED</span>
+                                        <div class="ad-mock-up">Contextual Google AdSense</div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="rail-card ad-unit">
-                                <div class="ad-placeholder-sidebar">
-                                    <span class="ad-label">ADVERTISEMENT</span>
-                                    <div class="ad-mock-up">Google AdSense</div>
+                                <div class="rail-card ad-unit">
+                                    <div class="ad-placeholder-sidebar">
+                                        <span class="ad-label">ADVERTISEMENT</span>
+                                        <div class="ad-mock-up">Google AdSense</div>
+                                    </div>
                                 </div>
+                                </aside>
                             </div>
-                        </aside>
-                    </div>
                 </section>
 
                 <!-- DISCOVERY VIEW (GALLERY) -->

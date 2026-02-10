@@ -39,6 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const refreshGallery = document.getElementById('refresh-gallery');
     const exploreMore = document.getElementById('explore-more');
 
+    const modalPrivacy = document.getElementById('modal-privacy');
+    const btnPrivacy = document.getElementById('btn-privacy');
+    const btnTerms = document.getElementById('btn-terms');
+    const btnCloseModal = document.querySelector('.btn-close-modal');
+
     // Pro Options Selectors
     const btnTogglePro = document.getElementById('btn-toggle-pro');
     const proOptionsGrid = document.getElementById('pro-options');
@@ -70,11 +75,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetPanel = document.getElementById(`${target}-view`);
             if (targetPanel) targetPanel.classList.add('active');
 
-            const titles = { studio: 'Prompt Studio', discovery: 'Discovery Gallery' };
+            const titles = {
+                studio: 'Prompt Studio',
+                discovery: 'Discovery Gallery',
+                guide: 'AI Mastering Guide'
+            };
             viewTitle.textContent = titles[target] || 'ProVision AI';
 
             showToast(`Navigated to ${titles[target]}`);
         });
+    });
+
+    // 4a. Modal Engine
+    [btnPrivacy, btnTerms].forEach(btn => {
+        btn.addEventListener('click', () => {
+            modalPrivacy.classList.add('active');
+        });
+    });
+
+    btnCloseModal.addEventListener('click', () => {
+        modalPrivacy.classList.remove('active');
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target === modalPrivacy) modalPrivacy.classList.remove('active');
     });
 
     // 5. Prompt Logic
