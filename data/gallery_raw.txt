@@ -1,0 +1,661 @@
+﻿/**
+ * ProVision AI - Core Logic
+ * Professional Dual-Theme Edition with Interactive Gallery
+ */
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. App State
+    const state = {
+        savedPrompts: JSON.parse(localStorage.getItem('provision_saved') || '[]'),
+        theme: localStorage.getItem('provision_theme') || 'light',
+        currentView: 'studio',
+        galleryData: generateGalleryData(),
+        displayLimit: 12,
+        isExpanded: false
+    };
+
+    // 2. Selectors
+    const menuItems = document.querySelectorAll('.menu-item');
+    const viewPanels = document.querySelectorAll('.view-panel');
+    const viewTitle = document.getElementById('current-view-title');
+
+    const selSubject = document.getElementById('sel-subject');
+    const selStyle = document.getElementById('sel-style');
+    const selLight = document.getElementById('sel-light');
+    const outputText = document.getElementById('output-text');
+    const userInput = document.getElementById('user-input');
+    const btnEnhance = document.getElementById('btn-enhance');
+
+    const btnCopy = document.getElementById('btn-copy');
+    const btnSave = document.getElementById('btn-save');
+    const libraryList = document.getElementById('library-list');
+
+    const feedContainer = document.getElementById('feed-container');
+
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toast-msg');
+
+    const themeToggle = document.querySelector('.btn-theme-toggle');
+    const refreshGallery = document.getElementById('refresh-gallery');
+    const exploreMore = document.getElementById('explore-more');
+
+    const modalPrivacy = document.getElementById('modal-privacy');
+    const btnPrivacy = document.getElementById('btn-privacy');
+    const btnTerms = document.getElementById('btn-terms');
+    const btnCloseModal = document.querySelector('.btn-close-modal');
+
+    // Pro Options Selectors
+    const btnTogglePro = document.getElementById('btn-toggle-pro');
+    const proOptionsGrid = document.getElementById('pro-options');
+    const negPromptInput = document.getElementById('neg-prompt');
+    const selAspect = document.getElementById('sel-aspect');
+    const selEngine = document.getElementById('sel-engine');
+
+    // 3. Theme Management
+    function initTheme() {
+        document.documentElement.setAttribute('data-theme', state.theme);
+    }
+
+    themeToggle.addEventListener('click', () => {
+        state.theme = state.theme === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', state.theme);
+        localStorage.setItem('provision_theme', state.theme);
+        showToast(`Switched to ${state.theme === 'dark' ? 'Dark' : 'Light'} Mode`);
+    });
+
+    // 4. Navigation Engine
+    menuItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const target = item.getAttribute('data-view');
+
+            menuItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+
+            viewPanels.forEach(p => p.classList.remove('active'));
+            const targetPanel = document.getElementById(`${target}-view`);
+            if (targetPanel) targetPanel.classList.add('active');
+
+            const titles = {
+                studio: 'Prompt Studio',
+                discovery: 'Discovery Gallery',
+                guide: 'AI Mastering Guide'
+            };
+            viewTitle.textContent = titles[target] || 'ProVision AI';
+
+            showToast(`Navigated to ${titles[target]}`);
+        });
+    });
+
+    // 4a. Modal Engine
+    [btnPrivacy, btnTerms].forEach(btn => {
+        btn.addEventListener('click', () => {
+            modalPrivacy.classList.add('active');
+        });
+    });
+
+    btnCloseModal.addEventListener('click', () => {
+        modalPrivacy.classList.remove('active');
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target === modalPrivacy) modalPrivacy.classList.remove('active');
+    });
+
+    // 5. Prompt Logic
+    function updatePrompt() {
+        const result = `${selSubject.value}, ${selStyle.value}, ${selLight.value}, masterfully crafted, hyper-detailed, 8k resolution`;
+
+        // Typing animation effect
+        outputText.value = '';
+        let i = 0;
+        const timer = setInterval(() => {
+            if (i < result.length) {
+                outputText.value += result[i];
+                i++;
+            } else {
+                clearInterval(timer);
+            }
+        }, 8);
+    }
+
+    [selSubject, selStyle, selLight].forEach(el => el.addEventListener('change', updatePrompt));
+
+    // Pro Options Toggle
+    btnTogglePro.addEventListener('click', () => {
+        proOptionsGrid.classList.toggle('active');
+        btnTogglePro.querySelector('svg').style.transform = proOptionsGrid.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+    });
+
+    // 6. AI Prompt Enhancement Engine
+    function enhancePrompt(rawInput) {
+        if (!rawInput || rawInput.trim().length === 0) {
+            showToast('?좑툘 Please describe what you want to create');
+            return;
+        }
+
+        const input = rawInput.toLowerCase();
+
+        // 6a. Korean to English Translation Engine
+        function translateToEnglish(text) {
+            const dictionary = {
+                '媛뺤븘吏': 'dog', '媛뺤븘吏媛': 'a dog', '?곗깋': 'white', '?몃뒗': 'playing', '?섏쁺??: 'swimming pool',
+                '?섏쁺?μ뿉??: 'in a swimming pool', '紐⑥뒿': 'scene', '怨좎뼇??: 'cat', '怨좎뼇?닿?': 'a cat',
+                '嫄대Ъ': 'building', '?꾩떆': 'city', '?앹뼇': 'sunset', '?섎뒛': 'sky', '諛붾떎': 'ocean',
+                '??: 'forest', '苑?: 'flower', '??: 'mountain', '?곗＜': 'space', '?멸컙': 'human',
+                '濡쒕큸': 'robot', '湲곌퀎': 'machine', '?ъ떊': 'goddess', '?꾩궗': 'warrior', '?щТ?쇱씠': 'samurai',
+                '踰싰퐙': 'cherry blossom', '?ㅼ삩': 'neon', '誘몃옒': 'future', '?꾪넻': 'traditional',
+                '??뀛由?: 'luxury', '?ㅽ룷痢좎뭅': 'sports car', '?곗＜ ?뺢굅??: 'space station', '諛붿씠??: 'viking',
+                '?섏젙 沅곸쟾': 'crystal palace', '?쒓컙 ?ы뻾??: 'time traveler', '遺덉궗議?: 'phoenix',
+                '?щ━??: 'running', '?껊뒗': 'smiling', '?붾━?섎뒗': 'cooking', '鍮꾪뻾?섎뒗': 'flying',
+                '?꾨쫫?ㅼ슫': 'beautiful', '?μ뾼??: 'majestic', '?붾젮??: 'vibrant', '?대몢??: 'dark',
+                '李④???: 'cold', '?곕쑜??: 'warm', '?좊퉬濡쒖슫': 'mystical'
+            };
+
+            let translated = text;
+            // Sorting by length descending to match longer phrases first
+            const sortedKeys = Object.keys(dictionary).sort((a, b) => b.length - a.length);
+
+            sortedKeys.forEach(kr => {
+                const regex = new RegExp(kr, 'g');
+                translated = translated.replace(regex, dictionary[kr]);
+            });
+
+            // Remove common Korean particles if they remain
+            translated = translated.replace(/[?닿??꾨????/g, ' ').replace(/\s+/g, ' ').trim();
+
+            return translated;
+        }
+
+        const translatedInput = translateToEnglish(rawInput);
+
+        // Keyword analysis
+        const subjectKeywords = {
+            architecture: ['building', '嫄대Ъ', 'architecture', '嫄댁텞', 'tower', '???, 'house', '吏?, 'castle', '??],
+            nature: ['mountain', '??, 'forest', '??, 'ocean', '諛붾떎', 'sky', '?섎뒛', 'sunset', '?앹뼇', 'lake', '?몄닔'],
+            portrait: ['person', '?щ엺', 'face', '?쇨뎬', 'portrait', '珥덉긽', 'warrior', '?꾩궗', 'samurai', '?щТ?쇱씠'],
+            fantasy: ['dragon', '?쒕옒怨?, 'wizard', '留덈쾿??, 'magic', '留덈쾿', 'phoenix', '遺덉궗議?],
+            technology: ['robot', '濡쒕큸', 'cyber', '?ъ씠踰?, 'futuristic', '誘몃옒', 'tech', '湲곗닠']
+        };
+
+        const styleKeywords = {
+            realistic: ['photo', '?ъ쭊', 'realistic', '?ъ떎??, 'detailed', '?몃???],
+            painting: ['painting', '洹몃┝', 'oil', '?좏솕', 'watercolor', '?섏콈??],
+            animation: ['anime', '?좊땲硫?, 'cartoon', '留뚰솕', 'pixar', '?쎌궗'],
+            cinematic: ['movie', '?곹솕', 'cinema', '?쒕꽕留?, 'dramatic', '洹뱀쟻']
+        };
+
+        const atmosphereKeywords = {
+            golden: ['sunset', '?앹뼇', 'warm', '?곕쑜??, 'gold', '湲덈튆'],
+            dark: ['dark', '?대몢??, 'night', '諛?, 'noir', '?꾩븘瑜?],
+            mystical: ['magical', '留덈쾿', 'mystical', '?좊퉬濡쒖슫', 'enchanted', '留덈쾿??]
+        };
+
+        let detectedSubject = 'A cinematic scene';
+        let detectedStyle = 'hyper-realistic digital art, 8k resolution';
+        let detectedAtmosphere = 'cinematic lighting, dramatic mood';
+
+        // Detect subject
+        for (const [category, keywords] of Object.entries(subjectKeywords)) {
+            if (keywords.some(kw => input.includes(kw))) {
+                if (category === 'architecture') detectedSubject = 'An architectural masterpiece';
+                else if (category === 'nature') detectedSubject = 'A breathtaking natural landscape';
+                else if (category === 'portrait') detectedSubject = 'A powerful portrait';
+                else if (category === 'fantasy') detectedSubject = 'An epic fantasy scene';
+                else if (category === 'technology') detectedSubject = 'A cutting-edge technological vision';
+                break;
+            }
+        }
+
+        // Detect style
+        for (const [style, keywords] of Object.entries(styleKeywords)) {
+            if (keywords.some(kw => input.includes(kw))) {
+                if (style === 'realistic') detectedStyle = 'photorealistic rendering, ultra-detailed, 8k';
+                else if (style === 'painting') detectedStyle = 'oil painting style, rich brushstrokes';
+                else if (style === 'animation') detectedStyle = 'Pixar animation style, vibrant colors';
+                else if (style === 'cinematic') detectedStyle = 'cinematic composition, Unreal Engine 5';
+                break;
+            }
+        }
+
+        // Detect atmosphere
+        for (const [atm, keywords] of Object.entries(atmosphereKeywords)) {
+            if (keywords.some(kw => input.includes(kw))) {
+                if (atm === 'golden') detectedAtmosphere = 'golden hour lighting, warm glow';
+                else if (atm === 'dark') detectedAtmosphere = 'high contrast noir, dramatic shadows';
+                else if (atm === 'mystical') detectedAtmosphere = 'ethereal glow, magical atmosphere';
+                break;
+            }
+        }
+
+        const negInput = negPromptInput.value.trim();
+        const aspectVal = selAspect.value;
+        const engineLabel = selEngine.options[selEngine.selectedIndex].text;
+
+        let enhancedPrompt = `${detectedSubject} featuring ${translatedInput}, ${detectedStyle}, ${detectedAtmosphere}, masterfully crafted, award-winning quality`;
+
+        // Append Pro Parameters
+        if (negInput) enhancedPrompt += ` --no ${negInput}`;
+        enhancedPrompt += ` ${aspectVal}`;
+        enhancedPrompt += ` [Optimized for ${engineLabel}]`;
+
+        // Typing animation
+        outputText.value = '';
+        let i = 0;
+        const timer = setInterval(() => {
+            if (i < enhancedPrompt.length) {
+                outputText.value += enhancedPrompt[i];
+                i++;
+            } else {
+                clearInterval(timer);
+            }
+        }, 5);
+
+        showToast('??AI has enhanced your prompt!');
+    }
+
+    if (btnEnhance && userInput) {
+        console.log('AI Enhancement button found, attaching handlers');
+        btnEnhance.addEventListener('click', () => {
+            console.log('Enhance button clicked!');
+            const rawText = userInput.value.trim();
+            console.log('User input:', rawText);
+            enhancePrompt(rawText);
+        });
+
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                console.log('Enter key pressed in user input');
+                btnEnhance.click();
+            }
+        });
+    } else {
+        console.error('AI Enhancement elements not found!', { btnEnhance, userInput });
+    }
+
+    // 6. User Actions
+    btnCopy.addEventListener('click', () => {
+        if (!outputText.value) return;
+        navigator.clipboard.writeText(outputText.value).then(() => {
+            showToast('Prompt copied to clipboard');
+        });
+    });
+
+    btnSave.addEventListener('click', () => {
+        const val = outputText.value;
+        if (!val) return;
+
+        state.savedPrompts.unshift(val);
+        if (state.savedPrompts.length > 5) state.savedPrompts.pop();
+
+        localStorage.setItem('provision_saved', JSON.stringify(state.savedPrompts));
+        renderLibrary();
+        showToast('Saved to your library');
+    });
+
+    function renderLibrary() {
+        if (state.savedPrompts.length === 0) {
+            libraryList.innerHTML = '<div class="empty-list">No saved prompts yet.</div>';
+            return;
+        }
+        libraryList.innerHTML = state.savedPrompts.map(p => `
+            <div class="saved-bubble">
+                ${p.substring(0, 50)}...
+            </div>
+        `).join('');
+    }
+
+    // 7. MASSIVELY Expanded Gallery Data with Professional Prompts
+    function generateGalleryData() {
+        return [
+            // Architecture (15 items) - Enhanced Professional Prompts
+            { id: 1, category: 'Architecture', title: 'Neo Brutalist Tower', url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=90', prompt: 'Neo-brutalist concrete tower, angular geometric design, raw exposed concrete texture, golden hour natural lighting, architectural photography, Nikon D850, 24mm tilt-shift lens, f/8 aperture, ultra sharp focus, professional commercial photography, 8k resolution, award-winning architectural digest style, dramatic sky backdrop, symmetrical composition' },
+            { id: 2, category: 'Architecture', title: 'Parametric Pavilion', url: 'https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=800&q=90', prompt: 'Parametric architecture pavilion, fluid organic forms inspired by Zaha Hadid, white matte material surface, computational design, minimal ambient lighting, hyper-detailed 3D rendering, Unreal Engine 5, ray tracing enabled, photorealistic materials, professional architectural visualization, 8k ultra HD, clean minimalist aesthetic, soft shadows' },
+            { id: 3, category: 'Architecture', title: 'Glass Skyscraper', url: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&q=90', prompt: 'Modern glass skyscraper, reflective curtain wall facade, blue hour photography timing, cityscape urban environment, Canon EOS R5, 16-35mm wide-angle lens, long exposure technique, crystal clear reflections, professional real estate photography, 8k resolution, vibrant blue tones, vertical composition, commercial architecture' },
+            { id: 4, category: 'Architecture', title: 'Minimalist House', url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=90', prompt: 'Contemporary minimalist residential house, clean geometric lines, natural wood cladding material, large floor-to-ceiling windows, warm interior lighting, architectural photography, Sony A7R IV, 24-70mm lens, f/5.6 aperture, professional interior design magazine quality, ultra detailed textures, 8k sharp resolution, Scandinavian design aesthetic' },
+            { id: 5, category: 'Architecture', title: 'Gothic Cathedral', url: 'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=800&q=90', prompt: 'Gothic cathedral interior architecture, soaring vaulted ribbed ceiling, magnificent stained glass windows, dramatic divine light rays streaming through, European medieval architecture, professional heritage photography, Canon 5D Mark IV, 14mm ultra-wide lens, HDR technique, hyper-detailed stone masonry, 8k resolution, majestic atmospheric mood, UNESCO world heritage quality' },
+            { id: 6, category: 'Architecture', title: 'Futuristic Bridge', url: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=90', prompt: 'Futuristic suspension bridge engineering, steel cable architecture, symmetrical geometric composition, modern infrastructure design, drone aerial photography, DJI Mavic 3 Pro, 24mm equivalent lens, f/5.6 aperture, sharp detailed engineering marvel, professional architectural magazine, 8k ultra resolution, perfect symmetry, blue hour lighting' },
+            { id: 7, category: 'Architecture', title: 'Asian Temple', url: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&q=90', prompt: 'Traditional Asian temple architecture, curved pagoda roofs, red paper lanterns, serene peaceful atmosphere, cultural heritage site, travel photography, Fujifilm X-T4, 35mm lens, natural lighting, ultra detailed traditional craftsmanship, professional National Geographic style, 8k resolution, warm color grading, authentic cultural documentation' },
+            { id: 8, category: 'Architecture', title: 'Industrial Warehouse', url: 'https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?w=800&q=90', prompt: 'Converted industrial warehouse loft, exposed red brick walls, soaring high ceilings, urban modern aesthetic, interior design photography, Canon EOS R6, 16-35mm wide lens, natural window light, professional real estate photography, 8k sharp resolution, industrial chic style, architectural digest quality, trendy urban living space' },
+            { id: 9, category: 'Architecture', title: 'Art Deco Building', url: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=800&q=90', prompt: 'Art Deco building facade, geometric zigzag patterns, vintage 1920s elegance, heritage architecture, architectural detail photography, Phase One XF IQ4, 80mm lens, golden hour natural light, ultra detailed ornamental features, professional heritage documentation, 8k resolution, period accurate vintage color grading, architectural preservation quality' },
+            { id: 10, category: 'Architecture', title: 'Desert Villa', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=90', prompt: 'Luxury desert villa architecture, infinity edge swimming pool, tropical palm trees landscape, modern minimalist design aesthetic, sunset golden hour timing, real estate photography, Sony A1, 24-70mm lens, f/8 aperture, professional luxury property marketing, 8k ultra HD resolution, warm ambient lighting, architectural digest cover quality' },
+            { id: 11, category: 'Architecture', title: 'Spiral Staircase', url: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&q=90', prompt: 'Elegant spiral staircase architecture, white marble steps, ornate wrought iron railings, architectural detail close-up, interior design photography, Nikon Z9, 85mm lens, soft diffused lighting, ultra sharp architectural detail, professional interior magazine, 8k resolution, classic timeless elegance, vertical composition' },
+            { id: 12, category: 'Architecture', title: 'Dome Structure', url: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800&q=90', prompt: 'Grand mosque dome interior, intricate Islamic geometric patterns, golden metallic accents, traditional Islamic architecture, cultural heritage photography, Canon 5DS R, 14mm ultra-wide lens, HDR bracketing technique, hyper-detailed ornamental craftsmanship, professional UNESCO heritage quality, 8k resolution, warm ambient lighting, majestic symmetrical composition' },
+            { id: 13, category: 'Architecture', title: 'Modern Library', url: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&q=90', prompt: 'Contemporary public library interior, floor-to-ceiling bookshelves, modern reading spaces, warm ambient lighting design, architectural interior photography, Sony A7R V, 24mm tilt-shift lens, professional cultural space documentation, ultra detailed wood textures, 8k sharp resolution, inviting atmosphere, architectural photography award quality' },
+            { id: 14, category: 'Architecture', title: 'Concrete Brutalism', url: 'https://images.unsplash.com/photo-1511818966892-d7d671e672a2?w=800&q=90', prompt: 'Brutalist concrete architecture, raw exposed aggregate texture, bold geometric forms, urban modernist design, architectural photography, Leica M11, 28mm lens, dramatic sky contrast, ultra detailed concrete surface, professional architectural documentation, 8k resolution, monochromatic color palette, striking angular composition' },
+            { id: 15, category: 'Architecture', title: 'Rooftop Garden', url: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=800&q=90', prompt: 'Urban rooftop garden oasis, modern sustainable design, contemporary planters, city skyline panoramic views, landscape architecture photography, Canon EOS R5, 16-35mm wide lens, golden hour natural light, professional landscape architecture magazine, 8k resolution, vibrant greenery, eco-friendly urban living, architectural digest quality' },
+
+            // Nature (20 items) - Enhanced Professional Prompts
+            { id: 16, category: 'Nature', title: 'Mountain Mist', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=90', prompt: 'Misty mountain peak at dawn, soft purple and orange gradient light, ethereal atmospheric haze, epic landscape photography, Phase One XF IQ4, 35mm lens, f/11 aperture, long exposure technique, professional National Geographic quality, 8k ultra HD resolution, majestic natural beauty, cinematic color grading, award-winning landscape photography' },
+            { id: 17, category: 'Nature', title: 'Desert Dunes', url: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&q=90', prompt: 'Vast Sahara sand dunes, golden hour warm lighting, dramatic long shadows, minimalist zen composition, landscape photography, Sony A1, 70-200mm telephoto lens, f/8 aperture, ultra detailed sand texture, professional travel photography, 8k sharp resolution, warm earth tones, serene desert landscape, National Geographic explorer quality' },
+            { id: 18, category: 'Nature', title: 'Coastal Cliffs', url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=90', prompt: 'Dramatic coastal sea cliffs, powerful crashing waves, moody stormy sky, epic seascape, wide angle landscape photography, Nikon D850, 14-24mm ultra-wide lens, f/16 aperture, ND filter long exposure, professional dramatic nature photography, 8k resolution, cinematic atmosphere, dynamic composition, weather photography award quality' },
+            { id: 19, category: 'Nature', title: 'Aurora Borealis', url: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800&q=90', prompt: 'Breathtaking Aurora Borealis over a snowy Arctic landscape, vibrant green and purple light curtains, starry night sky, high-end astrophotography, Sony A7S III, 14mm f/1.8 lens, 15-second long exposure, crystal clear details, 8k resolution, magical atmosphere, National Geographic style' },
+            { id: 20, category: 'Nature', title: 'Tropical Waterfall', url: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=800&q=90', prompt: 'Hidden tropical waterfall deep in a lush jungle, emerald green pool, misty atmospheric water spray, long exposure photography, Canon EOS R5, 24-70mm lens, f/11 aperture, silky water texture, vibrant tropical flora, 8k ultra HD, serene paradise mood' },
+            { id: 21, category: 'Nature', title: 'Cherry Blossoms', url: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&q=90', prompt: 'Japanese cherry blossom trees in peak bloom, delicate pink petals, spring morning light, soft bokeh background, Fujifilm X-T5, 56mm lens, f/1.2 aperture, artistic nature photography, 8k resolution, peaceful zen aesthetic, vibrant seasonal colors' },
+            { id: 22, category: 'Nature', title: 'Volcanic Landscape', url: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800&q=90', prompt: 'Epic volcanic landscape, active lava flows with molten orange glow, dark volcanic rock texture, dramatic smoke and steam, drone aerial photography, DJI Mavic 3, professional cinematic nature shot, 8k sharp resolution, intense primeval atmosphere, geological power' },
+            { id: 23, category: 'Nature', title: 'Redwood Forest', url: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&q=90', prompt: 'Ancient Redwood forest with towering giant trees, mystical morning fog streaming through branches, ethereal light rays, forest floor with ferns, Canon EOS R6, 35mm lens, ultra-detailed bark texture, 8k resolution, serene majestic atmosphere, nature documentary quality' },
+            { id: 24, category: 'Nature', title: 'Iceberg Field', url: 'https://images.unsplash.com/photo-1483664852095-d6cc6870702d?w=800&q=90', prompt: 'Massive crystal blue icebergs floating in pristine Arctic waters, refractive ice textures, clear polar sky, nature photography, Nikon Z9, 24-120mm lens, f/8, ultra-detailed iceberg facets, 8k sharp resolution, clean minimalist polar environment, serene wilderness' },
+            { id: 25, category: 'Nature', title: 'Lavender Fields', url: 'https://images.unsplash.com/photo-1499002238440-d264edd596ec?w=800&q=90', prompt: 'Endless blooming lavender fields in Provence, perfect purple rows stretching to the horizon, golden hour sunset light, cinematic landscape photography, Sony A7R IV, 50mm lens, f/4 aperture, professional travel magazine quality, 8k resolution, vibrant warm colors' },
+            { id: 26, category: 'Nature', title: 'Grand Canyon', url: 'https://images.unsplash.com/photo-1474044159687-1ee9f3a51722?w=800&q=90', prompt: 'Majestic Grand Canyon vista at sunset, layered red rock formations, dramatic shadows and golden light, epic landscape photography, Fujifilm GFX 100S, 23mm wide lens, f/16 aperture, hyper-detailed textures, 8k high resolution, National Geographic explorer quality' },
+            { id: 27, category: 'Nature', title: 'Rice Terraces', url: 'https://images.unsplash.com/photo-1496372412473-e8548ffd82bc?w=800&q=90', prompt: 'Tegalalang rice terraces in Bali, stepped emerald green paddies, tropical palm trees, misty morning atmosphere, travel photography, DJI Mavic 3 Pro, aerial panoramic view, ultra detailed agricultural landscape, 8k resolution, vibrant tropical aesthetic' },
+            { id: 28, category: 'Nature', title: 'Autumn Forest', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=90', prompt: 'Enchanted autumn forest, vibrant crimson and golden foliage, misty forest path, soft morning light, landscape photography, Canon 5D Mark IV, 85mm lens, f/1.8, creamy bokeh transition, 8k resolution, cozy nostalgic atmosphere, seasonal artistic masterpiece' },
+            { id: 29, category: 'Nature', title: 'Sunset Beach', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=90', prompt: 'Pristine tropical beach at sunset, leaning palm trees, turquoise crystalline water, vibrant orange sky, coastal photography, Sony A7R V, 16-35mm lens, f/8, ultra detailed sand and water ripples, 8k resolution, luxurious travel destination aesthetic' },
+            { id: 30, category: 'Nature', title: 'Canyon River', url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=90', prompt: 'Winding turquoise river through a deep desert canyon, Horseshoe Bend style, aerial drone perspective, DJI Inspire 3, 8k RAW video frame, ultra detailed rock strata, professional landscape photography, majestic natural curves, high dynamic range' },
+            { id: 31, category: 'Nature', title: 'Snowy Peaks', url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=90', prompt: 'Majestic snow-capped alpine mountain peaks, sharp ridgelines against deep blue sky, crisp winter air, mountaineering photography, Nikon Z8, 70-200mm lens, f/11 aperture, hyper-detailed snow texture, 8k sharp resolution, epic mountain range vista' },
+            { id: 32, category: 'Nature', title: 'Rainforest Canopy', url: 'https://images.unsplash.com/photo-1511497584788-876760111969?w=800&q=90', prompt: 'Dense tropical rainforest canopy from above, biodiversity hotspot, countless shades of emerald green, misty atmospheric perspective, aerial nature photography, Phase One IQ4, ultra-high resolution, 8k details, rich environmental textures, pristine ecosystem' },
+            { id: 33, category: 'Nature', title: 'Coral Reef', url: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=90', prompt: 'Vibrant coral reef ecosystem, colorful tropical fish schools, sun rays piercing through water, underwater photography, Canon EOS R5 in Nauticam housing, f/8 aperture, wide angle lens, crystal clear aquatic environment, 8k resolution, marine life documentary quality' },
+            { id: 34, category: 'Nature', title: 'Star Trail', url: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&q=90', prompt: 'Epic star trails over a silhouette of a mountain range, circular motion paths of stars, long exposure night sky, astrophotography, Sony A7S III, stacked exposure technique, pin-sharp star tracks, 8k resolution, celestial cosmic art, deep night blue tones' },
+            { id: 35, category: 'Nature', title: 'Glacier Valley', url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=90', prompt: 'Massive glacial u-shaped valley, ancient blue ice formations, pristine alpine wilderness, landscape photography, Fujifilm GFX 100 II, 30mm lens, f/11, hyper-detailed geological features, 8k resolution, majestic environmental scales, climate research quality' },
+
+            // Portrait (15 items)
+            { id: 36, category: 'Portrait', title: 'Cyberpunk Wanderer', url: 'https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?w=800&q=90', prompt: 'Cinematic cyberpunk portrait of a futuristic wanderer, neon blue and magenta rim lighting, wet street reflections, high-tech fashion, Sony A7R IV, 85mm f/1.4 GM lens, pin-sharp focus on eyes, dramatic shadows, 8k resolution, Blade Runner aesthetic' },
+            { id: 37, category: 'Portrait', title: 'Golden Hour Beauty', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&q=90', prompt: 'Stunning portrait of a woman in natural golden hour light, soft lens flare, ethereal glow, professional fashion photography, Canon EOS R5, 50mm f/1.2L lens, shallow depth of field, creamy bokeh, ultra-detailed skin textures, 8k resolution, warm sun-kissed palette' },
+            { id: 38, category: 'Portrait', title: 'Street Style', url: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=800&q=90', prompt: 'Gritty urban street style portrait, candid expression, city background with motion blur, editorial look, Nikon Z9, 35mm f/1.8 S lens, natural daylight, high contrast, professional streetwear photography, 8k resolution, sharp details, authentic vibe' },
+            { id: 39, category: 'Portrait', title: 'Classic Elegance', url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&q=90', prompt: 'Timeless elegant portrait, sophisticated studio lighting, black and white photography, high fashion aesthetic, Phase One XF, 80mm lens, f/5.6, hyper-detailed textures, 8k resolution, classic Hollywood glamour mood, dramatic chiaroscuro' },
+            { id: 40, category: 'Portrait', title: 'Adventure Spirit', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=90', prompt: 'Rugged outdoor adventurer portrait, wind-swept hair, natural mountain setting, authentic candid moment, Sony A1, 24-70mm GM II lens, f/2.8, sharp focus, vibrant natural colors, 8k resolution, spirit of freedom, National Geographic style' },
+            { id: 41, category: 'Portrait', title: 'Artistic Vision', url: 'https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?w=800&q=90', prompt: 'Creative artist portrait in a colorful studio, expressive pose, dramatic directional lighting, artistic composition, Fujifilm GFX 100S, 110mm f/2 lens, ultra-high resolution, vibrant art-inspired palette, 8k details, intellectual and creative mood' },
+            { id: 42, category: 'Portrait', title: 'Business Professional', url: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&q=90', prompt: 'Confident corporate executive portrait, modern glass office background, professional headshot lighting, high-end editorial look, Canon 5DS R, 85mm f/1.2 lens, f/4 aperture, sharp professional finish, 8k resolution, business leadership vibe' },
+            { id: 43, category: 'Portrait', title: 'Bohemian Vibe', url: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=800&q=90', prompt: 'Dreamy bohemian style portrait, natural soft makeup, flower crown, field of wild flowers, sunset light, ethereal atmosphere, Sony A7 III, 50mm f/1.8, soft focus, 8k resolution, romantic and free-spirited aesthetic' },
+            { id: 44, category: 'Portrait', title: 'Urban Youth', url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=90', prompt: 'Raw urban youth portrait, gritty city alleyway, casual streetwear, authentic expression, Nikon D850, 35mm lens, natural light with deep shadows, professional street photography, 8k resolution, urban culture aesthetic' },
+            { id: 45, category: 'Portrait', title: 'Vintage Glamour', url: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=800&q=90', prompt: 'Classic vintage Hollywood glamour portrait, retro styling, soft lighting, 1950s aesthetic, Leica M11, 50mm f/2 Summicron, timeless beauty, 8k resolution, film grain effect, nostalgic and elegant mood' },
+            { id: 46, category: 'Portrait', title: 'Athletic Power', url: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=800&q=90', prompt: 'Dynamic athletic portrait, dramatic gym lighting, sweat-glistening skin, explosive power moment, Sony A9 III, 70-200mm GM, f/2.8, frozen action, ultra-detailed muscles, 8k resolution, strength and determination' },
+            { id: 47, category: 'Portrait', title: 'Cultural Heritage', url: 'https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=800&q=90', prompt: 'Beautiful cultural heritage portrait, traditional ethnic clothing with intricate embroidery, soft natural lighting, authentic environment, Fujifilm X-H2S, 33mm f/1.4, rich textures and colors, 8k resolution, respectful and dignified' },
+            { id: 48, category: 'Portrait', title: 'Minimalist Mood', url: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=90', prompt: 'Minimalist editorial portrait, clean neutral background, subtle high-key lighting, contemporary fashion aesthetic, Nikon Z7 II, 85mm lens, sharp minimalist composition, 8k resolution, calm and artistic simplicity' },
+            { id: 49, category: 'Portrait', title: 'Creative Expression', url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&q=90', prompt: 'Avant-garde creative expression portrait, bold experimental makeup, vibrant color palette, striking pose, Sony A7R IV, 35mm lens, dramatic lighting, artistic fashion photography, 8k resolution, boundary-pushing aesthetic' },
+            { id: 50, category: 'Portrait', title: 'Natural Beauty', url: 'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=800&q=90', prompt: 'Hyper-realistic natural beauty portrait, zero makeup look, genuine smile, outdoor garden setting, Canon EOS R6 II, 50mm lens, f/1.8, soft bokeh, ultra-detailed skin and hair, 8k resolution, pure and authentic vibe' },
+
+            // Abstract (12 items)
+            { id: 51, category: 'Abstract', title: 'Fluid Dynamics', url: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=800&q=90', prompt: 'Mesmerizing abstract fluid dynamics art, iridescent oil-on-water colors, organic flowing shapes, macro photography, Canon EOS R5 with 100mm macro lens, ultra-detailed liquid textures, 8k resolution, dynamic energy, hypnotic prismatic color palette' },
+            { id: 52, category: 'Abstract', title: 'Geometric Patterns', url: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=800&q=90', prompt: 'Complex geometric abstract patterns, perfect symmetry, vibrant primary colors, modern digital art aesthetic, clean vector lines, high contrast, 8k resolution, mathematical precision, striking visual impact' },
+            { id: 53, category: 'Abstract', title: 'Light Painting', url: 'https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=800&q=90', prompt: 'Long exposure light painting, neon light trails in a dark void, ethereal motion, artistic night photography, Sony A7S III, 30-second exposure, vibrant light streaks, 8k resolution, kinetic energy, cosmic dance of light' },
+            { id: 54, category: 'Abstract', title: 'Smoke Art', url: 'https://images.unsplash.com/photo-1531251445707-1f000e1e87d0?w=800&q=90', prompt: 'Ethereal colorful smoke wisps, abstract organic forms against a solid black background, fluid motion, high-speed photography, Nikon D850, 105mm lens, f/11, sharp details of smoke particles, 8k resolution, mysterious and mesmerizing' },
+            { id: 55, category: 'Abstract', title: 'Crystalline Structures', url: 'https://images.unsplash.com/photo-1567095761054-7a02e69e5c43?w=800&q=90', prompt: 'Extreme macro of crystalline structures, intricate geometric mineral formations, prismatic light refraction, iridescent mineral surfaces, Sony A7R IV with macro probe lens, hyper-detailed mineralogy, 8k resolution, natural mathematical beauty' },
+            { id: 56, category: 'Abstract', title: 'Paint Splatter', url: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=90', prompt: 'Explosive abstract paint splatter, vibrant Jackson Pollock style, dynamic splashing motion, professional studio art photography, high contrast, 8k resolution, rich impasto textures, celebration of color and energy' },
+            { id: 57, category: 'Abstract', title: 'Ink in Water', url: 'https://images.unsplash.com/photo-1549281899-f75600a24107?w=800&q=90', prompt: 'Artistic ink dispersal in clear water, organic fluid patterns, mesmerizing smoke-like motion, macro photography, Sony A7R V, high-speed shutter, professional studio lighting, 8k resolution, elegant monochromatic gradients, peaceful and rhythmic abstract' },
+            { id: 58, category: 'Abstract', title: 'Fractal Patterns', url: 'https://images.unsplash.com/photo-1554188248-986adbb73be4?w=800&q=90', prompt: 'Complex mathematical fractal patterns, infinite recursive beauty, vibrant electric colors, digital generative art, hyper-detailed textures, 8k resolution, cosmic complexity, psychedelic visual experience' },
+            { id: 59, category: 'Abstract', title: 'Color Gradient', url: 'https://images.unsplash.com/photo-1557672199-6ba44af40e95?w=800&q=90', prompt: 'Perfectly smooth color gradient transition, vibrant rainbow spectrum, minimalist abstract background, professional digital illustration, 8k resolution, flawless blending, clean and modern aesthetic' },
+            { id: 60, category: 'Abstract', title: 'Texture Study', url: 'https://images.unsplash.com/photo-1553356084-58ef4a67b2a7?w=800&q=90', prompt: 'Detailed abstract texture macro, tactile material study, weathered surface with intricate metallic details, Canon 5DS R with macro lens, hyper-realistic textures, 8k resolution, weathered industrial aesthetic, rustic and complex' },
+            { id: 61, category: 'Abstract', title: 'Motion Blur', url: 'https://images.unsplash.com/photo-1518893063132-36e46dbe2428?w=800&q=90', prompt: 'Dynamic abstract motion blur, streaks of light and speed, kinetic energy, intentional camera movement (ICM) technique, Leica M11, long exposure, 8k resolution, vibrant energy, expressive and atmospheric' },
+            { id: 62, category: 'Abstract', title: 'Prismatic Light', url: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=800&q=90', prompt: 'Ethereal prismatic light refraction, rainbow light rays through crystal glass, optical phenomenon, soft ethereal glow, macro photography, Fujifilm GFX 100S, ultra-detailed light dispersion, 8k resolution, magical and serene atmosphere' },
+
+            // Technology (12 items)
+            { id: 63, category: 'Technology', title: 'Circuit Board', url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=90', prompt: 'Macro photography of a high-tech green circuit board, intricate copper traces and soldering, electronic components, professional tech magazine style, Sony A7R IV with 90mm macro lens, f/8, ultra-sharp details, 8k resolution, futuristic industrial aesthetic' },
+            { id: 64, category: 'Technology', title: 'Robot Arm', url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=90', prompt: 'Advanced industrial robotic arm in a clean manufacturing environment, precise engineering, minimalist white composition, professional studio lighting, Canon EOS R5, 50mm f/1.8, sharp focus on mechanical joints, 8k resolution, futuristic automation' },
+            { id: 65, category: 'Technology', title: 'Data Visualization', url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=90', prompt: 'Complex digital data visualization, glowing 3D particles and nodes, futuristic holographic interface, professional cyber-tech aesthetic, vibrant blue and cyan tones, 8k resolution, machine learning nodes, high-tech information flow' },
+            { id: 66, category: 'Technology', title: 'Server Room', url: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=90', prompt: 'Modern enterprise server room, blinking LED indicators, perfectly organized blue and white cables, high-tech infrastructure, wide-angle photography, Nikon Z9, 14-24mm lens, professional IT environment, 8k resolution, digital backbone aesthetic' },
+            { id: 67, category: 'Technology', title: 'VR Headset', url: 'https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?w=800&q=90', prompt: 'Futuristic virtual reality VR headset, sleek industrial design, ambient neon purple lighting, immersive technology, professional product photography, Sony A7 III, 35mm f/1.4, sharp focus on lenses, 8k resolution, metaverse entry point' },
+            { id: 68, category: 'Technology', title: 'Microchip', url: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=90', prompt: 'Extreme macro of a cutting-edge silicon microchip, golden circuit pathways, advanced semiconductor technology, Nikon D850 with macro lens, hyper-detailed textures of nano-architecture, 8k resolution, high-tech power and precision' },
+            { id: 69, category: 'Technology', title: 'Smart City', url: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=800&q=90', prompt: 'Futuristic smart city at twilight, glowing connected infrastructure, digital holographic overlays, high-tech urban planning, professional cityscape photography, Fujifilm GFX 100S, long exposure, vibrant streaks of light, 8k resolution, innovation hub aesthetic' },
+            { id: 70, category: 'Technology', title: '3D Printer', url: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&q=90', prompt: 'Precision industrial 3D printer in action, additive manufacturing process, laser sintering, high-tech production lab, professional industrial photography, Canon EOS R3, 50mm lens, sharp focus on the emerging part, 8k resolution, creative manufacturing technology' },
+            { id: 71, category: 'Technology', title: 'Drone Flight', url: 'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=800&q=90', prompt: 'Modern high-speed racing drone hovering in mid-air, carbon fiber frame, glowing LED navigation lights, tech innovation in aviation, professional drone photography, Sony A1, 1/8000s shutter speed, sharp details of spinning propellers, 8k resolution, high-tech flight' },
+            { id: 72, category: 'Technology', title: 'Coding Screen', url: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&q=90', prompt: 'Professional software developer workspace, complex high-level code on a high-resolution screen, vibrant syntax highlighting, minimalist desk setup, professional editorial photography, soft ambient lighting, 8k resolution, software engineering excellence' },
+            { id: 73, category: 'Technology', title: 'AI Neural Network', url: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=800&q=90', prompt: 'Abstract visualization of an AI neural network, complex data nodes and artificial intelligence pathways, machine learning architecture, professional generative art, vibrant blue and purple gradients, 8k resolution, deep learning visualization' },
+            { id: 74, category: 'Technology', title: 'Fiber Optics', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=90', prompt: 'Glowing fiber optic cables transmitting high-speed data, bundles of light photons, advanced network technology, macro photography, Nikon Z9 with 105mm macro, ultra-sharp light strands, 8k resolution, global connectivity aesthetic' },
+
+            // Fantasy (15 items)
+            { id: 75, category: 'Fantasy', title: 'Enchanted Forest', url: 'https://images.unsplash.com/photo-1510051646651-705307293581?w=800&q=90', prompt: 'Mystical enchanted forest at night, glowing bioluminescent plants and fungi, ethereal teal and violet lighting, magical atmospheric haze, professional fantasy concept art, hyper-detailed environmental design, 8k resolution, whimsical and mysterious atmosphere' },
+            { id: 76, category: 'Fantasy', title: 'Dragon Realm', url: 'https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?w=800&q=90', prompt: 'Epic scale fantasy realm, a massive ancient dragon soaring over jagged volcanic mountains, cinematic composition, dramatic sunset clouds, professional digital painting, hyper-detailed scales and fire breath, 8k resolution, legendary and majestic atmosphere' },
+            { id: 77, category: 'Fantasy', title: 'Crystal Cavern', url: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=90', prompt: 'Subterranean crystal cavern, giant glowing amethyst and quartz formations, magical ambient light, detailed mineral textures, Canon EOS R5, f/11, long exposure, professional cave photography, 8k resolution, mystical and awe-inspiring' },
+            { id: 78, category: 'Fantasy', title: 'Floating Islands', url: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&q=90', prompt: 'Surreal floating sky islands, majestic waterfalls cascading into an endless cloud sea, ethereal morning light, professional fantasy world-building art, hyper-detailed cliff textures, 8k resolution, serene and magical landscape' },
+            { id: 79, category: 'Fantasy', title: 'Wizard Tower', url: 'https://images.unsplash.com/photo-1478827886588-be6d6d4bb41e?w=800&q=90', prompt: 'Ancient wizard tower perched on a lonely cliff, magical energy swirling around the spire, mystical runes glowing in the dark, professional fantasy architecture, hyper-detailed stone masonry, 8k resolution, occult and mysterious mood' },
+            { id: 80, category: 'Fantasy', title: 'Unicorn Meadow', url: 'https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?w=800&q=90', prompt: 'Majestic unicorn grazing in an enchanted meadow, soft rainbow mist, vibrant magical flowers, ethereal morning lighting, professional digital art, hyper-detailed fur and horn, 8k resolution, dreamy and pure atmosphere' },
+            { id: 81, category: 'Fantasy', title: 'Phoenix Rising', url: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=800&q=90', prompt: 'Mythical phoenix reborn from ashes, feathers made of living fire and embers, epic sky backdrop, professional legendary creature art, hyper-detailed plumage, 8k resolution, majestic power and rebirth' },
+            { id: 82, category: 'Fantasy', title: 'Mermaid Lagoon', url: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=90', prompt: 'Hidden tropical mermaid lagoon, bioluminescent coral reefs, turquoise crystalline waters, mythical marine kingdom, professional underwater digital artwork, hyper-detailed sea life and pearls, 8k resolution, serene and enchanting aquatic world' },
+            { id: 83, category: 'Fantasy', title: 'Celestial Palace', url: 'https://images.unsplash.com/photo-1518818608552-195ed130cdf4?w=800&q=90', prompt: 'Heavenly celestial palace floating in the clouds, golden architecture with divine light rays, majestic white marble towers, professional fantasy concept art, hyper-detailed cloudscapes, 8k resolution, ethereal and transcendent atmosphere' },
+            { id: 84, category: 'Fantasy', title: 'Dark Sorcery', url: 'https://images.unsplash.com/photo-1518458028785-8fbcd101ebb9?w=800&q=90', prompt: 'Powerful dark sorcerer casting a complex spell, swirling purple and black magic energy, ancient grimoire with glowing runes, professional fantasy illustration, hyper-detailed particle effects and lighting, 8k resolution, mysterious and gothic vibe' },
+            { id: 85, category: 'Fantasy', title: 'Elven Village', url: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=90', prompt: 'Hidden elven village integrated into an ancient towering tree forest, organic and graceful architecture, soft golden woodland lighting, professional environmental design art, hyper-detailed leaf and bark textures, 8k resolution, peaceful and wise aesthetic' },
+            { id: 86, category: 'Fantasy', title: 'Time Portal', url: 'https://images.unsplash.com/photo-1446776899648-aa78eefe8ed0?w=800&q=90', prompt: 'Vibrant swirling time portal in the middle of a desert, dimensional gateway with cosmic energy ripples, professional steampunk-fantasy fusion art, hyper-detailed mechanical and magical components, 8k resolution, mysterious and epic' },
+            { id: 87, category: 'Fantasy', title: 'Fairy Kingdom', url: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800&q=90', prompt: 'Miniature fairy kingdom hidden in a flower garden, tiny glowing petal houses, whimsical magical creatures, professional macro fantasy art, hyper-detailed floral textures and pixie dust, 8k resolution, delightful and enchanted realm' },
+            { id: 88, category: 'Fantasy', title: 'Ice Queen Castle', url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&q=90', prompt: 'Majestic ice castle with crystalline spires reaching into the winter sky, pale blue and silver color palette, professional Nordic fantasy art, hyper-detailed refractive ice textures, 8k resolution, cold and majestic atmosphere' },
+            { id: 89, category: 'Fantasy', title: 'Mythical Beast', url: 'https://images.unsplash.com/photo-1516934024742-b461fba47600?w=800&q=90', prompt: 'Epic encounter with a massive mythical beast, a chimera of ancient legend, cinematic composition, dramatic lighting and scale, professional legendary creature art, hyper-detailed fur and feathers, 8k resolution, heroic and awe-inspiring' },
+
+            // Food (10 items) - NEW CATEGORY
+            { id: 90, category: 'Food', title: 'Gourmet Plating', url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=90', prompt: 'Exquisite fine dining gourmet dish, artistic minimalist plating, Michelin star culinary art, professional food photography, Sony A7R IV with 90mm macro lens, f/5.6 aperture, soft directional light, ultra-detailed textures of fresh ingredients, 8k resolution, elegant and sophisticated' },
+            { id: 91, category: 'Food', title: 'Fresh Produce', url: 'https://images.unsplash.com/photo-1506617420156-8e4536971650?w=800&q=90', prompt: 'Vibrant local farmers market produce, colorful assorted vegetables, organic farm-to-table aesthetic, professional lifestyle photography, Canon EOS R5, 35mm lens, natural daylight, rich colors and textures, 8k resolution, fresh and healthy vibe' },
+            { id: 92, category: 'Food', title: 'Artisan Bread', url: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&q=90', prompt: 'Rustic sourdough artisan bread, crispy golden crust with flour dusting, professional bakery photography, warm ambient lighting, Nikon Z7 II with 50mm lens, f/2.8, shallow depth of field, 8k resolution, cozy and appetizing atmosphere' },
+            { id: 93, category: 'Food', title: 'Sushi Art', url: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=800&q=90', prompt: 'Magnificent sushi platter, premium sashimi grade fish, Japanese culinary precision, professional food styling, Sony A7 III, 85mm lens, minimalist slate background, 8k resolution, vibrant and authentic Japanese cuisine' },
+            { id: 94, category: 'Food', title: 'Dessert Elegance', url: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800&q=90', prompt: 'Elegant high-end dessert presentation, intricate pastry art, velvety chocolate mousse and gold leaf, professional confectionery photography, Fujifilm GFX 100, macro lens, soft focus background, 8k resolution, decadent and refined' },
+            { id: 95, category: 'Food', title: 'Coffee Culture', url: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=90', prompt: 'Professional latte art in a specialty coffee shop, creamy espresso texture, artisan cafe culture, lifestyle photography, Leica SL2, 35mm lens, morning sunlight, cozy atmosphere, 8k resolution, inviting morning ritual' },
+            { id: 96, category: 'Food', title: 'Street Food', url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=90', prompt: 'Authentic local street food experience, vibrant colors and steam, cultural gastronomy, professional travel food photography, Nikon D850, 50mm lens, natural light, 8k resolution, appetizing and full of life' },
+            { id: 97, category: 'Food', title: 'Wine Tasting', url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&q=90', prompt: 'Sophisticated wine tasting in a historic vineyard cellar, glowing wine in a crystal glass, professional winery photography, Sony A7R IV, soft ambient light, 8k resolution, elegant and refined lifestyle' },
+            { id: 98, category: 'Food', title: 'Farmers Market', url: 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=800&q=90', prompt: 'Bustling local farmers market at dawn, fresh seasonal harvest, community gathering, professional lifestyle photography, Canon 5D Mark IV, wide angle perspective, vibrant and authentic atmosphere, 8k resolution' },
+            { id: 99, category: 'Food', title: 'Chocolate Temptation', url: 'https://images.unsplash.com/photo-1511381939415-e44015466834?w=800&q=90', prompt: 'Luxury chocolate truffles and dark chocolate pieces, rich cocoa texture, premium ingredients, professional food photography, macro lens, warm dramatic lighting, 8k resolution, decadent and indulgent atmosphere' },
+
+            // Animals (10 items) - NEW CATEGORY
+            { id: 100, category: 'Animals', title: 'Wild Lion', url: 'https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=800&q=90', prompt: 'Majestic adult male lion portrait, sunlight illuminating a golden mane, intense amber eyes, professional safari wildlife photography, Nikon Z9 with 400mm f/2.8 lens, sharp detail of fur and whiskers, 8k resolution, king of the African savanna' },
+            { id: 101, category: 'Animals', title: 'Hummingbird', url: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?w=800&q=90', prompt: 'Hummingbird frozen in mid-flight while feeding on a vibrant flower, iridescent green and violet feathers, wings with motion blur, professional nature photography, Sony A1, 1/8000s shutter speed, f/4 macro, 8k resolution, exquisite natural detail' },
+            { id: 102, category: 'Animals', title: 'Ocean Dolphin', url: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=90', prompt: 'Dolphin jumping high through ocean waves, water droplets glistening in the sun, playful and free nature, professional marine wildlife photography, Canon EOS R5, 70-200mm lens, f/5.6, crisp frozen action, 8k resolution, majestic aquatic life' },
+            { id: 103, category: 'Animals', title: 'Mountain Goat', url: 'https://images.unsplash.com/photo-1497118809143-9c44b90ed822?w=800&q=90', prompt: 'Sure-footed mountain goat on a steep cliff edge, thick white winter coat, epic alpine background, professional wildlife photography, Fujifilm GFX 100S, 110mm lens, f/4, ultra-detailed textures, 8k resolution, dramatic landscape and survival' },
+            { id: 104, category: 'Animals', title: 'Elephant Herd', url: 'https://images.unsplash.com/photo-1564760055775-d63b17a55c44?w=800&q=90', prompt: 'Gentle giant elephant family herd migrating across the savanna, dusty atmospheric lighting at sunset, professional wildlife documentary photography, Nikon D850, 400mm lens, 8k resolution, emotional and majestic conservation theme' },
+            { id: 105, category: 'Animals', title: 'Arctic Fox', url: 'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=800&q=90', prompt: 'Arctic fox in a pristine snowy landscape, thick white winter coat against the white snow, piercing blue eyes, professional polar wildlife photography, Sony A7R V, 400mm lens, f/2.8, hyper-detailed fur, 8k resolution, extreme Arctic survival' },
+            { id: 106, category: 'Animals', title: 'Butterfly Macro', url: 'https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?w=800&q=90', prompt: 'Extreme macro of butterfly wings, vibrant colorful scale patterns, professional insect photography, Canon 5DS R with MP-E 65mm macro lens, ultra-high magnification, hyper-detailed textures, 8k resolution, natural complex beauty' },
+            { id: 107, category: 'Animals', title: 'Owl Wisdom', url: 'https://images.unsplash.com/photo-1568132731995-f2b94545681b?w=800&q=90', prompt: 'Wise-looking owl perched on a forest branch at dusk, piercing orange eyes, nocturnal hunter, professional wildlife photography, Leica SL2 with 90-280mm lens, shallow depth of field, 8k resolution, mysterious and majestic guardian' },
+            { id: 108, category: 'Animals', title: 'Tropical Parrot', url: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?w=800&q=90', prompt: 'Exotic tropical parrot with vibrant scarlet and blue plumage, lush rainforest background, professional bird photography, Sony A1, 200-600mm lens, f/6.3, pin-sharp detail of feathers, 8k resolution, vibrant tropical life' },
+            { id: 109, category: 'Animals', title: 'Bear Family', url: 'https://images.unsplash.com/photo-1534778101976-62847782c213?w=800&q=90', prompt: 'Brown bear family in a river, mother teaching cubs to fish, splashing water, professional wildlife photography, Nikon Z8, 400mm lens, f/4, fast shutter speed, 8k resolution, authentic and emotional natural habitat' },
+
+            // Sports (10 items) - NEW CATEGORY
+            { id: 110, category: 'Sports', title: 'Surfing Wave', url: 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=800&q=90', prompt: 'Professional surfer carving a massive crystalline wave, explosive water spray, high-action ocean sports, cinematic composition, Sony A9 III, 400mm lens, 1/4000s shutter, frozen water detail, 8k resolution, athletic prowess and nature power' },
+            { id: 111, category: 'Sports', title: 'Mountain Climbing', url: 'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=800&q=90', prompt: 'Extreme rock climber scaling a vertical granite wall, high-altitude alpine environment, determination and focus, professional adventure photography, Nikon Z9, 24-70mm lens, f/5.6, hyper-detailed gear and rock textures, 8k resolution, heroic challenge' },
+            { id: 112, category: 'Sports', title: 'Basketball Dunk', url: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&q=90', prompt: 'Epic high-flying basketball dunk, peak athletic performance, dynamic court action, professional sports photography, Canon EOS R3, 85mm f/1.2 lens, shallow depth of field, sharp frozen movement, 8k resolution, competitive energy' },
+            { id: 113, category: 'Sports', title: 'Yoga Practice', url: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=90', prompt: 'Serene yoga pose on a mountain ridge at sunrise, perfect balance and mindfulness, professional fitness photography, Sony A7R IV, soft golden light, 8k resolution, peaceful wellness lifestyle, harmonious nature' },
+            { id: 114, category: 'Sports', title: 'Marathon Run', url: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=800&q=90', prompt: 'Professional marathon runner in peak focus, city street race background with motion blur, professional athletics photography, Nikon D6, 70-200mm lens, f/2.8, sharp frozen action, 8k resolution, endurance and determination' },
+            { id: 115, category: 'Sports', title: 'Skateboard Trick', url: 'https://images.unsplash.com/photo-1547447134-cd3f5c716030?w=800&q=90', prompt: 'High-speed skateboard kickflip in a gritty urban skate park, youth culture and skill, professional street sports photography, Sony A7 III, fish-eye lens perspective, wide-angle action, 8k resolution, authentic urban vibe' },
+            { id: 116, category: 'Sports', title: 'Swimming Pool', url: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?w=800&q=90', prompt: 'Competitive swimmer mid-stroke, water surface ripples and dramatic lighting, professional aquatic sports photography, Canon 1D X Mark III, underwater housing, 8k resolution, explosive power and technique' },
+            { id: 117, category: 'Sports', title: 'Cycling Race', url: 'https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=800&q=90', prompt: 'Professional cycling peloton at high speed, blurred background, endurance and teamwork, professional road race photography, Fujifilm X-T5, fast shutter speed, 8k resolution, aerodynamic performance' },
+            { id: 118, category: 'Sports', title: 'Gym Training', url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=90', prompt: 'Intense heavy lift gym workout, dramatic high-contrast lighting, sweat and grit, professional fitness photography, Nikon Z7 II, 35mm lens, f/1.8, sharp focus on the athlete, 8k resolution, bodybuilding motivation' },
+            { id: 119, category: 'Sports', title: 'Snowboarding', url: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&q=90', prompt: 'Pro snowboarder jumping off a natural cliff, powder snow explosion, high-action winter sports, professional mountain photography, Leica SL2-S, 1/2000s shutter, 8k resolution, extreme mountain adventure' },
+
+            // Art (10 items) - NEW CATEGORY
+            { id: 120, category: 'Art', title: 'Street Graffiti', url: 'https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=800&q=90', prompt: 'Magnificent urban graffiti mural, vibrant spray paint textures and colors, professional street art photography, Nikon Z7 II, wide-angle lens, sharp details of paint drips and layers, 8k resolution, cultural expression masterpiece' },
+            { id: 121, category: 'Art', title: 'Museum Gallery', url: 'https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=800&q=90', prompt: 'Minimalist contemporary art gallery, white walls and high ceilings, perfectly lit modern masterpiece, professional architectural and art photography, Canon EOS R5, 24mm tilt-shift lens, 8k resolution, serene and sophisticated cultural space' },
+            { id: 122, category: 'Art', title: 'Sculpture Garden', url: 'https://images.unsplash.com/photo-1584286595398-a59511e0649f?w=800&q=90', prompt: 'Mesmerizing three-dimensional public sculpture installation, modern geometric form in a garden park, professional outdoor art photography, Sony A7R IV, soft afternoon light, 8k resolution, artistic landscape integration' },
+            { id: 123, category: 'Art', title: 'Oil Painting', url: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800&q=90', prompt: 'Hyper-detailed close-up of a classical oil painting, thick impasto brush strokes, visible canvas texture, professional art reproduction, Macro lens, dramatic studio lighting, 8k resolution, Renaissance technical excellence' },
+            { id: 124, category: 'Art', title: 'Digital Art', url: 'https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?w=800&q=90', prompt: 'Future-themed digital art masterpiece, complex generative patterns and glowing light effects, professional new media art, vibrant neon color palette, 8k resolution, flawless digital rendering, creative concept exploration' },
+            { id: 125, category: 'Art', title: 'Pottery Craft', url: 'https://images.unsplash.com/photo-1493106641515-6b5631de4bb9?w=800&q=90', prompt: 'Artisan pottery making process, spinning clay on a wheel, hands covered in clay, professional craft photography, Fujifilm X-T5, macro lens, warm authentic lighting, 8k resolution, traditional craftsmanship celebration' },
+            { id: 126, category: 'Art', title: 'Calligraphy', url: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=90', prompt: 'Elegant traditional calligraphy art, black ink on parchment, delicate brush strokes, professional artistic lettering photography, Sony A1, macro lens, soft focus, 8k resolution, timeless and meditative art form' },
+            { id: 127, category: 'Art', title: 'Photography Exhibition', url: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=90', prompt: 'Curated fine-art photography gallery exhibition, high-end prints in black frames, professional event photography, soft gallery lighting, 8k resolution, visual storytelling through a lens' },
+            { id: 128, category: 'Art', title: 'Glass Blowing', url: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800&q=90', prompt: 'Molten glowing glass blowing process, skilled craftsman at work, intense orange heat and light, professional documentary photography, Nikon D6, fast shutter, ultra-detailed glass textures, 8k resolution, artistic skill and fire' },
+            { id: 129, category: 'Art', title: 'Textile Design', url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=90', prompt: 'Intricate high-end textile pattern design, woven fabric textures and complex embroidery, professional fashion surface design photography, macro lens, 8k resolution, rich colors and artisanal craftsmanship' },
+
+            // Interior Design (10 items) - NEW CATEGORY
+            { id: 130, category: 'Interior', title: 'Modern Living', url: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1200&q=95', prompt: 'Ultra-modern minimalist living room, floor-to-ceiling windows, sculptural furniture, high-end interior photography, Hasselblad H6D-100c, 24mm wide-angle lens, f/8, soft natural lighting, architectural digest quality, 8k resolution, clean and expansive space' },
+            { id: 131, category: 'Interior', title: 'Industrial Kitchen', url: 'https://images.unsplash.com/photo-1556911228-e59db6b3bd3e?w=1200&q=95', prompt: 'Sleek industrial kitchen design, matte black cabinets, urban brick walls, professional architectural photography, Sony A7R IV, 16-35mm tilt-shift lens, sharp focus, technical industrial aesthetic, 8k resolution, modern culinary space' },
+            { id: 132, category: 'Interior', title: 'Zen Bedroom', url: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=1200&q=95', prompt: 'Serene Japanese-inspired bedroom, low platform bed, natural wood and shoji screens, soft morning light, interior design photography, Nikon Z9, 35mm lens, peaceful minimalist atmosphere, 8k resolution, tranquil living space' },
+            { id: 133, category: 'Interior', title: 'Scandi Dining', url: 'https://images.unsplash.com/photo-1517705008128-361805f42e8a?w=1200&q=95', prompt: 'Bright Scandinavian dining area, light wood table, iconic designer chairs, minimalist white walls, professional interior shoot, Canon EOS R5, 24mm lens, soft diffused lighting, 8k high-fidelity resolution, airy and functional design' },
+            { id: 134, category: 'Interior', title: 'Art Deco Lounge', url: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=1200&q=95', prompt: 'Elegant Art Deco lounge, velvet furniture, gold metallic accents, geometric wall art, dramatic lighting, professional interior photography, Phase One XF, 80mm lens, f/5.6, hyper-detailed textures, 8k resolution, 1920s luxury aesthetic' },
+            { id: 135, category: 'Interior', title: 'Minimalist Office', url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=95', prompt: 'Clean home office setup, ergonomic furniture, abundant natural light, minimalist organization, professional corporate interior photography, Sony A1, 24mm lens, focused and productive mood, 8k resolution, modern professional space' },
+            { id: 136, category: 'Interior', title: 'Bohemian Loft', url: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=1200&q=95', prompt: 'Eclectic bohemian loft, colorful rugs, plant-filled corners, natural sunlight, professional lifestyle interior photography, Fujifilm GFX 100S, 32-64mm lens, vibrant and cozy atmosphere, 8k resolution, artistic urban living' },
+            { id: 137, category: 'Interior', title: 'Luxury Bathroom', url: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=1200&q=95', prompt: 'Opulent spa-like bathroom, marble walls, freestanding tub, soft ambient lighting, high-end real estate photography, Canon 5DS R, 17mm wide lens, ultra-detailed stone textures, 8k resolution, peaceful relaxation space' },
+            { id: 138, category: 'Interior', title: 'Cozy Library', url: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1200&q=95', prompt: 'Warm traditional home library, floor-to-ceiling bookshelves, leather armchair, localized warm light, professional interior photography, Nikon D850, 24mm lens, f/4, intellectual and cozy atmosphere, 8k resolution, timeless sanctuary' },
+            { id: 139, category: 'Interior', title: 'Urban Balcony', url: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=1200&q=95', prompt: 'Modern urban balcony with city views, sustainable furniture, vertical garden, golden hour sunset light, professional landscape and interior photography, Leica M11, 28mm lens, 8k resolution, stylish city living' },
+
+            // Fashion & Editorial (10 items) - NEW CATEGORY
+            { id: 140, category: 'Fashion', title: 'Neon High Fashion', url: 'https://images.unsplash.com/photo-1539106609514-6663cd525ed8?w=1200&q=95', prompt: 'Vogue editorial fashion shoot, model in avant-garde neon dress, high-contrast studio lighting, sharp focus on fabrics, Hasselblad H6D, 80mm lens, f/8, professional retouched quality, 8k resolution, bold colors and style' },
+            { id: 141, category: 'Fashion', title: 'Minimalist Portrait', url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1200&q=95', prompt: 'Editorial minimalist beauty portrait, clean beige background, high-fashion makeup, soft directional lighting, Canon EOS R5, 85mm f/1.2L lens, pin-sharp eyes, perfect skin texture, 8k resolution, sophisticated fashion aesthetic' },
+            { id: 142, category: 'Fashion', title: 'Street Couture', url: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1200&q=95', prompt: 'Urban street style fashion photography, oversized futuristic coat, city alleyway setting, natural grit and color, Sony A7R IV, 35mm f/1.4 GM lens, dynamic pose, 8k resolution, high-end streetwear editorial' },
+            { id: 143, category: 'Fashion', title: 'Vintage Glamour', url: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1200&q=95', prompt: '1950s inspired fashion editorial, retro styling and hairstyle, soft classic lighting, cinematic color grading, Nikon Z9, 50mm f/1.2 lens, f/2 aperture, nostalgic film aesthetic, 8k resolution, timeless elegance' },
+            { id: 144, category: 'Fashion', title: 'Cyberpunk Runway', url: 'https://images.unsplash.com/photo-1523381235312-3f181d0f9730?w=1200&q=95', prompt: 'Futuristic runway show, models in cybernetic-inspired high fashion, blue and pink laser lighting, high-tech stage set, professional event photography, Sony A1, 70-200mm lens, sharp action, 8k resolution, avant-garde vision' },
+            { id: 145, category: 'Fashion', title: 'Black & White Editorial', url: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=1200&q=95', prompt: 'Classic black and white fashion editorial, dramatic shadows, architectural clothing forms, high-fashion pose, Phase One IQ4, 110mm lens, ultra-high dynamic range, 8k resolution, timeless and artistic' },
+            { id: 146, category: 'Fashion', title: 'Tropical Editorial', url: 'https://images.unsplash.com/photo-1520975916090-3105956dac38?w=1200&q=95', prompt: 'High-fashion shoot in a lush botanical garden, vibrant floral patterns, soft tropical light, editorial style, Fujifilm GFX 100, 63mm lens, rich colors and textures, 8k resolution, exotic fashion aesthetic' },
+            { id: 147, category: 'Fashion', title: 'Athleisure Motion', url: 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=1200&q=95', prompt: 'Activewear fashion editorial in motion, dynamic running pose, urban stadium background, sharp focus on fabrics, Sony A9 III, frozen movement, vibrant energy, 8k resolution, high-performance lifestyle' },
+            { id: 148, category: 'Fashion', title: 'Jewelry Detail', url: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1200&q=95', prompt: 'Macro fashion photography of luxury jewelry, emerald and gold details, sharp focus on gemstones, professional jewelry retouching, Sony A7R V with macro lens, f/11, 8k resolution, sparkling high-end commercial' },
+            { id: 149, category: 'Fashion', title: 'Boho Chic', url: 'https://images.unsplash.com/photo-1529139513466-42ac40fa0bcc?w=1200&q=95', prompt: 'Soft bohemian fashion editorial, flowing fabrics, field of wheat at sunset, golden hour light, lifestyle fashion photography, Canon EOS R6, 50mm lens, f/1.8, warm and romantic mood, 8k resolution, natural style' },
+
+            // Cinematic Scenes (10 items) - NEW CATEGORY
+            { id: 150, category: 'Cinematic', title: 'Cyberpunk Alley', url: 'https://images.unsplash.com/photo-1605142859862-978be7eba909?w=1200&q=95', prompt: 'Cinematic cyberpunk street scene, rain-soaked asphalt with neon reflections, depth of field, anamorphic lens flares, Arri Alexa LF, professional color grading, noir atmosphere, 8k resolution, blade runner aesthetic' },
+            { id: 151, category: 'Cinematic', title: 'Distant Galaxy', url: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=95', prompt: 'Epic space cinematography, distant nebula and glowing stars, high-fidelity VFX frame, cinematic composition, sci-fi movie still, 8k resolution, majestic cosmic scale, vibrant deep colors' },
+            { id: 152, category: 'Cinematic', title: 'Noir Detective', url: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=1200&q=95', prompt: 'Classic film noir movie still, detective in a trench coat, venetian blind shadows, high contrast black and white, dramatic lighting, 35mm film grain, 8k resolution, mysterious and suspenseful mood' },
+            { id: 153, category: 'Cinematic', title: 'High Fantasy Epic', url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&q=95', prompt: 'Cinematic wide shot of an epic fantasy castle on a mountain peak, dramatic storm clouds, lord of the rings aesthetic, cinematic lighting, ultra-high resolution VFX, 8k resolution, heroic and vast' },
+            { id: 154, category: 'Cinematic', title: 'Post-Apocalyptic', url: 'https://images.unsplash.com/photo-1506466010722-395aa2bef877?w=1200&q=95', prompt: 'Cinematic post-apocalyptic city landscape, overgrown skyscrapers, dusty atmospheric lighting, cinematic composition, Arri Alexa, masterfully graded, 8k resolution, melancholic and grand' },
+            { id: 155, category: 'Cinematic', title: 'Underwater Magic', url: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1200&q=95', prompt: 'Cinematic underwater scene, ethereal light rays through deep blue water, professional aquatic cinematography, high-fidelity bubbles and movement, 8k resolution, mystical and peaceful movie still' },
+            { id: 156, category: 'Cinematic', title: 'Steampunk Workshop', url: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=95', prompt: 'Cinematic steampunk interior, glowing copper pipes and steam, warm artisanal lighting, intricate mechanical details, cinematic 35mm film look, 8k resolution, industrial vintage aesthetic' },
+            { id: 157, category: 'Cinematic', title: 'Mystical Portal', url: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=1200&q=95', prompt: 'Cinematic shot of a glowing dimensional portal in a forest, particle effects and light ribbons, sci-fi fantasy movie still, professional VFX, 8k resolution, mysterious and epic energy' },
+            { id: 158, category: 'Cinematic', title: 'Samurai Sunset', url: 'https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?w=1200&q=95', prompt: 'Dramatic cinematic samurai duel silhouette at sunset, high contrast, Kurosawa aesthetic, cinematic composition, wide-angle lens, Arri Alexa color science, 8k resolution, heroic and legendary' },
+            { id: 159, category: 'Cinematic', title: 'Futuristic Lab', url: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1200&q=95', prompt: 'High-tech cinematic laboratory scene, glowing blue holographic displays, sleek industrial design, sci-fi movie still, professional cinematography, 8k resolution, innovation and precision' },
+
+            // Extra Diversity Boost (10 items in various categories)
+            { id: 160, category: 'Architecture', title: 'Eco Skyscraper', url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=95', prompt: 'Vertical forest skyscraper, sustainable urban architecture, lush greenery on every balcony, blue hour lighting, DJI Mavic 3 Pro, 8k resolution, futuristic green city vision' },
+            { id: 161, category: 'Nature', title: 'Desert Oasis', url: 'https://images.unsplash.com/photo-1509316702740-e296c0203098?w=1200&q=95', prompt: 'Lush green oasis in the middle of sand dunes, crystal clear water, high-end landscape photography, Nikon Z9, 8k resolution, professional National Geographic quality' },
+            { id: 162, category: 'Portrait', title: 'Cyber Monk', url: 'https://images.unsplash.com/photo-1478827886588-be6d6d4bb41e?w=1200&q=95', prompt: 'Futuristic cybernetic monk, glowing neon tattoos, cinematic portrait, high contrast noir, Sony A7R IV, 8k resolution, spiritual and high-tech blend' },
+            { id: 163, category: 'Abstract', title: 'Prism Geometry', url: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=1200&q=95', prompt: 'Abstract prismatic geometry, rainbow light dispersion, minimalist digital art, ultra-high resolution, 8k details, mesmerizing structural beauty' },
+            { id: 164, category: 'Technology', title: 'Humanoid Hand', url: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1200&q=95', prompt: 'Advanced humanoid robotic hand holding a seedling, high-tech and nature synergy, professional tech photography, Sony A1, 8k resolution, symbol of hope and technology' },
+            { id: 165, category: 'Fantasy', title: 'Floating Temple', url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&q=95', prompt: 'Ancient white temple floating among high mountain clouds, magical divine light rays, professional fantasy art, 8k resolution, serene and transcendent' },
+            { id: 166, category: 'Food', title: 'Artisan Pasta', url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200&q=95', prompt: 'Handmade artisan pasta with fresh herbs, soft natural morning light, rustic wood background, professional food photography, 8k resolution, delicious and authentic' },
+            { id: 167, category: 'Animals', title: 'Snow Leopard', url: 'https://images.unsplash.com/photo-1564349683136-77e08bef1ed1?w=1200&q=95', prompt: 'Wild snow leopard in a rocky mountain environment, camouflaged fur, intense gaze, professional wildlife photography, Sony A1, 600mm lens, 8k resolution, master of the peaks' },
+            { id: 168, category: 'Sports', title: 'Canyon Kayak', url: 'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=1200&q=95', prompt: 'Extreme white-water kayaking through a deep red canyon, splashing turquoise water, high-action adventure photography, Nikon Z9, 8k resolution, dynamic and powerful' },
+            { id: 169, category: 'Art', title: 'Street Artist', url: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=1200&q=95', prompt: 'Street artist creating a large-scale mural, spray paint cans and colorful splatters, urban creativity in motion, candid photography, Leica SL2, 8k resolution, authentic art scene' },
+        ];
+    }
+
+    // 8. Improved Shuffle Algorithm
+    function shuffleArray(array) {
+        const shuffled = [...array];
+        // Fisher-Yates shuffle with crypto-random for better randomness
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+
+    function renderFeed() {
+        const itemsToShow = state.isExpanded ? state.galleryData : shuffleArray(state.galleryData).slice(0, state.displayLimit);
+
+        feedContainer.innerHTML = itemsToShow.map(item => `
+            <div class="card-item" data-id="${item.id}">
+                <button class="btn-remix" onclick="window.remixPrompt('${item.prompt.replace(/'/g, "\\'")}')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M21 2v6h-6M3 22v-6h6M21 13a9 9 0 1 1-3-7.7L21 8M3 11a9 9 0 0 1 3 7.7L3 16" />
+                    </svg>
+                    Remix
+                </button>
+                <img src="${item.url}" class="card-img" alt="${item.title}" loading="lazy">
+                <div class="card-content">
+                    <div class="card-header-info">
+                        <span class="category-tag">${item.category}</span>
+                        <h5 class="card-title">${item.title}</h5>
+                    </div>
+                    <p class="prompt-preview">${item.prompt}</p>
+                    <button class="btn-copy-mini">Copy Prompt</button>
+                </div>
+            </div>
+        `).join('');
+
+        // Add click listeners to each card
+        document.querySelectorAll('.card-item').forEach(card => {
+            card.addEventListener('click', (e) => {
+                // Prevent clicks on buttons inside the card from triggering the card's main click
+                if (e.target.closest('.btn-remix') || e.target.closest('.btn-copy-mini')) {
+                    e.stopPropagation();
+                    return;
+                }
+                const id = parseInt(card.getAttribute('data-id'));
+                const item = state.galleryData.find(d => d.id === id);
+                if (item) showPromptModal(item);
+            });
+        });
+
+        // Add click listeners for the new mini copy buttons
+        document.querySelectorAll('.btn-copy-mini').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent card click
+                const cardItem = e.target.closest('.card-item');
+                if (cardItem) {
+                    const id = parseInt(cardItem.getAttribute('data-id'));
+                    const item = state.galleryData.find(d => d.id === id);
+                    if (item) {
+                        navigator.clipboard.writeText(item.prompt).then(() => {
+                            showToast('Prompt copied from gallery!');
+                        });
+                    }
+                }
+            });
+        });
+    }
+
+    // Remix Global Function
+    window.remixPrompt = function (promptText) {
+        // Switch to Studio View
+        const studioBtn = document.querySelector('[data-view="studio"]');
+        if (studioBtn) studioBtn.click();
+
+        // Populate and Enhance
+        userInput.value = promptText;
+        showToast('??Remixed to Studio!');
+
+        // Auto-scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Brief pulse effect on input
+        userInput.style.boxShadow = '0 0 20px var(--primary)';
+        setTimeout(() => { userInput.style.boxShadow = ''; }, 1000);
+    };
+
+    // 9. Gallery Controls
+    refreshGallery.addEventListener('click', () => {
+        renderFeed();
+        showToast('Gallery refreshed with new images!');
+    });
+
+    exploreMore.addEventListener('click', () => {
+        state.isExpanded = !state.isExpanded;
+        exploreMore.textContent = state.isExpanded ? 'Show less' : 'Explore more';
+        renderFeed();
+        showToast(state.isExpanded ? `Showing all ${state.galleryData.length} images` : 'Showing featured selection');
+    });
+
+    // 10. Prompt Modal System
+    function showPromptModal(item) {
+        const modal = document.createElement('div');
+        modal.className = 'prompt-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>${item.title}</h3>
+                    <button class="btn-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <img src="${item.url}" class="modal-img" alt="${item.title}">
+                    <div class="prompt-display">
+                        <div class="prompt-label">AI Generation Prompt</div>
+                        <div class="prompt-text">${item.prompt}</div>
+                    </div>
+                    <button class="btn btn-primary btn-sm" id="modal-copy-btn">Copy Prompt ?뱥</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Close handlers
+        modal.querySelector('.btn-close').addEventListener('click', () => modal.remove());
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+
+        // Copy handler
+        modal.querySelector('#modal-copy-btn').addEventListener('click', () => {
+            navigator.clipboard.writeText(item.prompt).then(() => {
+                showToast('Prompt copied from gallery!');
+                modal.remove();
+            });
+        });
+    }
+
+    // 11. Toast Notification
+    let toastTimer;
+    function showToast(msg) {
+        clearTimeout(toastTimer);
+        toastMsg.textContent = msg;
+        toast.classList.remove('hidden');
+        toastTimer = setTimeout(() => toast.classList.add('hidden'), 2500);
+    }
+
+    // Initial Load
+    initTheme();
+    updatePrompt();
+    renderFeed();
+    renderLibrary();
+
+    console.log(`ProVision AI Engine Initialized with ${state.galleryData.length} High-Quality Images across 10 categories.`);
+});
