@@ -1,131 +1,152 @@
 /**
- * AI 개발부장 코다리의 야심작
- * '구글애드센서 수익화 앱브라우저' 핵심 로직
+ * KODARI AI Prompt Browser - Core Logic
+ * Nebula Dark Edition
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 0. PWA Service Worker Registration
+    // 0. PWA Registration
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js')
-            .then(() => console.log('🐟 코다리 부장: PWA 엔진 가동! (Service Worker Registered)'))
-            .catch(err => console.error('PWA Fail:', err));
+            .then(() => console.log('🐟 코다리 부장: PWA 엔진 가동!'))
+            .catch(err => console.error(err));
     }
 
-    console.log('🐟 코다리 부장: 시스템 가동 준비 완료! 충성!');
+    // --- State & Selectors ---
+    let savedPrompts = JSON.parse(localStorage.getItem('saved_prompts') || '[]');
 
-    // DOM Elements
-    const navItems = document.querySelectorAll('.nav-item');
-    const views = document.querySelectorAll('.view');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.view-section');
     const viewTitle = document.getElementById('view-title');
-    const urlInput = document.getElementById('url-input');
-    const goBtn = document.getElementById('go-btn');
-    const browserFrame = document.getElementById('browser-frame');
-    const browserPlaceholder = document.getElementById('browser-placeholder');
-    const toast = document.getElementById('kodari-toast');
-    const toastMessage = document.getElementById('toast-message');
 
-    // 1. Navigation Logic (Updated)
-    navItems.forEach(item => {
-        item.addEventListener('click', () => {
-            const targetView = item.getAttribute('data-view');
-            navItems.forEach(nav => nav.classList.remove('active'));
-            item.classList.add('active');
-            views.forEach(view => view.classList.add('hidden'));
-            document.getElementById(`${targetView}-view`).classList.remove('hidden');
+    const subject = document.getElementById('p-subject');
+    const style = document.getElementById('p-style');
+    const lighting = document.getElementById('p-lighting');
+    const resultArea = document.getElementById('prompt-result');
 
-            const viewNames = {
-                dashboard: 'AI Prompt 빌더',
-                browser: '프리미엄 앱브라우저',
-                analytics: '정밀 수익 분석',
-                settings: '시스템 설정'
-            };
-            viewTitle.textContent = viewNames[targetView];
-            showKodariToast(`대표님, ${viewNames[targetView]} 화면입니다! 🚀`);
+    const copyBtn = document.getElementById('copy-btn');
+    const saveBtn = document.getElementById('save-btn');
+    const savedList = document.getElementById('saved-prompts');
+
+    const imageFeed = document.getElementById('image-feed');
+    const browserUrl = document.getElementById('browser-url');
+    const browserGo = document.getElementById('browser-go');
+    const targetFrame = document.getElementById('target-frame');
+
+    const notif = document.getElementById('notif-system');
+    const notifText = document.getElementById('notif-text');
+
+    // --- Core Functions ---
+
+    // 1. Navigation
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            const target = link.getAttribute('data-view');
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+
+            sections.forEach(s => s.classList.add('hidden'));
+            document.getElementById(`${target}-view`).classList.remove('hidden');
+
+            const names = { dashboard: '프롬프트 빌더', browser: '앱 브라우저', analytics: '수익 통계' };
+            viewTitle.textContent = names[target];
+            notify(`'${names[target]}' 화면으로 이동했습니다. 🚀`);
         });
     });
 
-    // 2. AI Prompt Builder Logic
-    const subjectSelect = document.getElementById('prompt-subject');
-    const styleSelect = document.getElementById('prompt-style');
-    const lightingSelect = document.getElementById('prompt-lighting');
-    const finalPrompt = document.getElementById('final-prompt');
-    const copyBtn = document.getElementById('copy-prompt-btn');
+    // 2. Prompt Generation Logic
+    function refreshPrompt() {
+        const text = `${subject.value}, ${style.value}, ${lighting.value}, highly detailed, digital masterpiece --v 6.0`;
 
-    function updatePrompt() {
-        const text = `${subjectSelect.value}, ${styleSelect.value}, ${lightingSelect.value}, masterpiece, highly detailed --v 6.0`;
-        finalPrompt.value = text;
+        // Dynamic typing feel
+        resultArea.value = '';
+        let i = 0;
+        const interval = setInterval(() => {
+            if (i < text.length) {
+                resultArea.value += text[i];
+                i++;
+            } else {
+                clearInterval(interval);
+            }
+        }, 10);
     }
 
-    [subjectSelect, styleSelect, lightingSelect].forEach(el => {
-        el.addEventListener('change', updatePrompt);
-    });
+    [subject, style, lighting].forEach(el => el.addEventListener('change', refreshPrompt));
 
+    // 3. User Actions
     copyBtn.addEventListener('click', () => {
-        finalPrompt.select();
+        resultArea.select();
         document.execCommand('copy');
-        showKodariToast('프롬프트를 복사했습니다! 이제 AI 도구에서 사용하세요! 📋');
+        notify('프롬프트가 클립보드에 복사되었습니다! 📋');
     });
 
-    // 3. Dynamic Gallery Rendering (Simulated for high engagement)
-    const galleryGrid = document.getElementById('ai-gallery');
-    const sampleImages = [
-        { title: 'Neon Samurai', tag: '#Cyberpunk', url: 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=400&auto=format&fit=crop' },
-        { title: 'Forest Spirit', tag: '#Fantasy', url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=400&auto=format&fit=crop' },
-        { title: 'Space Whale', tag: '#Sci-Fi', url: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=400&auto=format&fit=crop' },
-        { title: 'Vintage Cyborg', tag: '#Portrait', url: 'https://images.unsplash.com/photo-1589254065878-42c9da997008?q=80&w=400&auto=format&fit=crop' }
+    saveBtn.addEventListener('click', () => {
+        const current = resultArea.value;
+        if (!current) return;
+
+        savedPrompts.unshift(current);
+        if (savedPrompts.length > 5) savedPrompts.pop(); // Keep only last 5 for UI
+
+        localStorage.setItem('saved_prompts', JSON.stringify(savedPrompts));
+        updateSavedUI();
+        notify('라이브러리에 프롬프트를 저장했습니다! ⭐');
+    });
+
+    function updateSavedUI() {
+        if (savedPrompts.length === 0) {
+            savedList.innerHTML = '<div class="empty-status">저장된 프롬프트가 없습니다. 🐟</div>';
+            return;
+        }
+        savedList.innerHTML = savedPrompts.map((p, idx) => `
+            <div class="saved-item">
+                ${p.substring(0, 60)}...
+            </div>
+        `).join('');
+    }
+
+    // 4. Dynamic Gallery
+    const galleryData = [
+        { title: 'Neon Seoul 2077', tag: '#Cyberpunk', url: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=400' },
+        { title: 'Whale Navigator', tag: '#SpaceArt', url: 'https://images.unsplash.com/photo-1614728263952-84ea256f9679?q=80&w=400' },
+        { title: 'Ancient Guardian', tag: '#Fantasy', url: 'https://images.unsplash.com/photo-1542641728-6ca359b085f4?q=80&w=400' },
+        { title: 'Synthwave Sunset', tag: '#Retro', url: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=400' },
+        { title: 'Ghost of Forest', tag: '#Mystery', url: 'https://images.unsplash.com/photo-1510051646651-705307293581?q=80&w=400' },
+        { title: 'Robot Chess', tag: '#Minimal', url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=400' }
     ];
 
     function renderGallery() {
-        galleryGrid.innerHTML = ''; // Clear skeletons
-        sampleImages.forEach(img => {
-            const item = document.createElement('div');
-            item.className = 'gallery-item';
-            item.innerHTML = `
+        imageFeed.innerHTML = galleryData.map(img => `
+            <div class="img-item">
                 <img src="${img.url}" alt="${img.title}">
-                <div class="gallery-overlay">
+                <div class="img-overlay">
                     <span class="item-title">${img.title}</span>
                     <span class="item-tag">${img.tag}</span>
                 </div>
-            `;
-            item.addEventListener('click', () => {
-                showKodariToast(`'${img.title}' 스타일로 이동합니다 (연결된 애드센스 페이지로!) 🎣`);
-                // 실제 서비스라면 특정 제휴/애드센스 페이지로 window.open(url)
-            });
-            galleryGrid.appendChild(item);
-        });
+            </div>
+        `).join('');
     }
 
-    // Initial Render
-    updatePrompt();
-    setTimeout(renderGallery, 1500); // 1.5초 후 낚아올리기 완료 시뮬레이션
-
-    // 4. Browser Logic
-    function loadUrl() {
-        let url = urlInput.value.trim();
-        if (!url) {
-            showKodariToast('대표님, URL을 먼저 입력해주셔야 합니다! 🐟');
-            return;
-        }
+    // 5. Browser Logic
+    browserGo.addEventListener('click', () => {
+        let url = browserUrl.value.trim();
+        if (!url) { notify('대표님, URL을 입력하셔야죠! 🐟'); return; }
         if (!url.startsWith('http')) url = 'https://' + url;
-        showKodariToast('부장 코다리가 페이지를 낚아채오는 중입니다... 🎣');
-        browserFrame.src = url;
-        browserPlaceholder.classList.add('hidden');
-    }
-
-    goBtn.addEventListener('click', loadUrl);
-    urlInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') loadUrl();
+        notify('페이지를 낚아채오는 중... 🎣');
+        targetFrame.src = url;
     });
 
-    // 5. Kodari Toast Utility
-    function showKodariToast(message) {
-        toastMessage.textContent = message;
-        toast.classList.remove('hidden');
-        setTimeout(() => toast.classList.add('hidden'), 3000);
+    // 6. Utility Notification
+    function notify(message) {
+        notifText.textContent = message;
+        notif.classList.remove('hidden');
+        setTimeout(() => notif.classList.add('hidden'), 3000);
     }
 
-    // Initial Greetings
+    // --- Init ---
+    refreshPrompt();
+    renderGallery();
+    updateSavedUI();
+
     setTimeout(() => {
-        showKodariToast('대표님, AI 프롬프트 수익화 프로젝트 가동합니다! 😎🚀');
+        notify('충성! 코다리 부장입니다. 대표님을 모시겠습니다! 🫡');
     }, 1000);
 });

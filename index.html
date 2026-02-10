@@ -4,142 +4,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google AdSense 수익화 앱브라우저 | 대표님 전용</title>
+    <title>KODARI AI Prompt Browser | 가치를 만드는 공간</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    <!-- Google Fonts: Inter & Outfit for premium look -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Outfit:wght@500;700&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap"
         rel="stylesheet">
 </head>
 
-<body>
-    <div class="app-container">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar">
-            <div class="logo">
-                <span class="logo-icon">🐟</span>
-                <span class="logo-text">KODARI AdSense</span>
+<body class="nebula-theme">
+    <div class="app-layout">
+        <!-- [LEFT] NAVIGATION -->
+        <aside class="nav-sidebar">
+            <div class="brand">
+                <div class="brand-logo">🐟</div>
+                <h1 class="brand-name">KODARI</h1>
             </div>
-            <nav class="nav-menu">
-                <button class="nav-item active" data-view="dashboard">
-                    <span class="icon">📊</span> 대시보드
+            <nav class="primary-nav">
+                <button class="nav-link active" data-view="dashboard">
+                    <span class="nav-icon">✨</span>
+                    <span class="nav-label">프롬프트 빌더</span>
                 </button>
-                <button class="nav-item" data-view="browser">
-                    <span class="icon">🌐</span> 앱브라우저
+                <button class="nav-link" data-view="browser">
+                    <span class="nav-icon">🌐</span>
+                    <span class="nav-label">앱 브라우저</span>
                 </button>
-                <button class="nav-item" data-view="analytics">
-                    <span class="icon">📈</span> 수익 분석
-                </button>
-                <button class="nav-item" data-view="settings">
-                    <span class="icon">⚙️</span> 설정
+                <button class="nav-link" data-view="analytics">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">수익 통계</span>
                 </button>
             </nav>
-            <div class="sidebar-footer">
-                <div class="rep-card">
-                    <div class="rep-info">
-                        <span class="rep-label">AI 1인 기업 대표님</span>
-                        <span class="rep-status">Online 🟢</span>
-                    </div>
+            <div class="nav-footer">
+                <div class="user-badge">
+                    <div class="status-dot"></div>
+                    <span class="user-name">AI Representative</span>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <header class="top-nav">
-                <h1 id="view-title">수익화 대시보드</h1>
-                <div class="user-actions">
-                    <button class="btn btn-primary">수익 새로고침</button>
+        <!-- [CENTER] MAIN CONTENT -->
+        <main class="main-viewport">
+            <header class="view-header">
+                <div class="header-content">
+                    <h2 id="view-title">프롬프트 빌더</h2>
+                    <div class="trending-ticker">
+                        <span class="ticker-label">HOT STYLES:</span>
+                        <div class="ticker-content">
+                            <span>#CyberpunkUE5</span>
+                            <span>#VanGoghOil</span>
+                            <span>#Pixar3DRender</span>
+                            <span>#HyperRealistic</span>
+                        </div>
+                    </div>
                 </div>
             </header>
 
-            <section id="content-area" class="content-area">
-                <!-- AI Prompt Builder View (Default) -->
-                <div id="dashboard-view" class="view">
-                    <div class="prompt-builder-container">
-                        <div class="builder-header">
-                            <h2>✨ AI Prompt 빌더</h2>
-                            <p>클릭 몇 번으로 전문가급 미드저니/DALL-E 프롬프트를 완성하세요.</p>
+            <div id="content-container">
+                <!-- AI PROMPT BUILDER -->
+                <section id="dashboard-view" class="view-section">
+                    <div class="builder-card">
+                        <div class="card-header">
+                            <h3>Magic Prompt Generator</h3>
+                            <p>선택만 하세요. 나머지는 부장 코다리가 처리합니다.</p>
                         </div>
-                        <div class="builder-grid">
-                            <div class="builder-group">
-                                <label>주제 (Subject)</label>
-                                <select id="prompt-subject">
-                                    <option value="A majestic cyberpunk city">사이버펑크 도시</option>
-                                    <option value="A mystical forest with glowing spirits">선령이 깃든 숲</option>
-                                    <option value="An astronaut riding a whale in space">우주에서 고래를 탄 우주비행사</option>
-                                    <option value="A hyper-realistic portrait of a cyborg">하이퍼리얼 시보그 초상화</option>
+                        <div class="builder-controls">
+                            <div class="select-group">
+                                <label>Subject</label>
+                                <select id="p-subject">
+                                    <option value="A mystical cyborg phoenix rising from ashes">잿더미에서 살아나는 기계 불사조
+                                    </option>
+                                    <option value="A serene garden floating in high nebula">우주 성운 속의 평화로운 정원</option>
+                                    <option value="Infinite library with books flying like birds">새처럼 날아다니는 책들이 있는 영원의
+                                        도서관</option>
+                                    <option value="Cyberpunk street in Seoul, heavy rain">폭우가 쏟아지는 서울의 사이버펑크 거리</option>
                                 </select>
                             </div>
-                            <div class="builder-group">
-                                <label>화풍 (Art Style)</label>
-                                <select id="prompt-style">
-                                    <option value="Digital Art, Unreal Engine 5">디지털 아트 (UE5)</option>
-                                    <option value="Oil painting, van gogh style">유화 (고흐 화풍)</option>
-                                    <option value="Cinematic lighting, 8k, photorealistic">시네마틱 실사</option>
-                                    <option value="Cute 3D render, Pixar style">귀여운 3D (픽사 스타일)</option>
+                            <div class="select-group">
+                                <label>Art Style</label>
+                                <select id="p-style">
+                                    <option value="Hyper-realistic, Unreal Engine 5 render, 8k">하이퍼 리얼리즘 (UE5)</option>
+                                    <option value="Vibrant watercolor painting, soft edges">선명한 수채화 풍</option>
+                                    <option value="Retro synthwave aesthetic, neon colors">레트로 신스웨이브</option>
+                                    <option value="Minimalist vector illustration">미니멀리스트 벡터 일러스트</option>
                                 </select>
                             </div>
-                            <div class="builder-group">
-                                <label>조명 (Lighting)</label>
-                                <select id="prompt-lighting">
-                                    <option value="Volumetric lighting">입체적 조명</option>
-                                    <option value="Golden hour warmth">골든 아워 (따뜻함)</option>
-                                    <option value="Neon glow, moody">네온 글로우 (무드)</option>
-                                    <option value="Soft natural light">부드러운 자연광</option>
+                            <div class="select-group">
+                                <label>Lighting</label>
+                                <select id="p-lighting">
+                                    <option value="Cinematic rim light, moody shadow">시네마틱 림 라이트</option>
+                                    <option value="Soft morning sunlight via window">창가로 들어오는 부드러운 아침 햇살</option>
+                                    <option value="Bioluminescent glow, magical atmosphere">발광 생명체의 신비로운 빛</option>
+                                    <option value="Harsh noir high-contrast">강렬한 누아르 대비</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="result-area">
-                            <textarea id="final-prompt" readonly placeholder="빌더를 선택하면 여기에 프롬프트가 생성됩니다..."></textarea>
-                            <button id="copy-prompt-btn" class="btn btn-primary">프롬프트 복사하기 📋</button>
+                        <div class="prompt-output">
+                            <textarea id="prompt-result" readonly></textarea>
+                            <div class="output-actions">
+                                <button id="copy-btn" class="btn-action primary">포인트로 복사하기 📋</button>
+                                <button id="save-btn" class="btn-action secondary">라이브러리에 저장 ⭐</button>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="gallery-section">
-                        <div class="section-header">
-                            <h3>🔥 실시간 인기 AI 아트 (수익화 연결)</h3>
-                            <div class="gallery-filters">
-                                <button class="filter-btn active">전체</option>
-                                    <button class="filter-btn">실사</button>
-                                    <button class="filter-btn">애니</button>
-                                    <button class="filter-btn">추상화</button>
-                            </div>
+                    <div class="gallery-wrapper">
+                        <div class="wrapper-header">
+                            <h4>Trending AI Masterpieces</h4>
+                            <button class="btn-link">더 보기 →</button>
                         </div>
-                        <div id="ai-gallery" class="gallery-grid">
-                            <!-- JS에서 이미지 로드 예정 -->
-                            <div class="gallery-item-skeleton">이미지 낚아올리는 중... 🎣</div>
-                            <div class="gallery-item-skeleton">이미지 낚아올리는 중... 🎣</div>
-                            <div class="gallery-item-skeleton">이미지 낚아올리는 중... 🎣</div>
-                            <div class="gallery-item-skeleton">이미지 낚아올리는 중... 🎣</div>
+                        <div id="image-feed" class="image-grid">
+                            <!-- JS Injection -->
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Browser View (Hidden initially) -->
-                <div id="browser-view" class="view hidden">
-                    <div class="browser-controls">
-                        <input type="text" id="url-input" placeholder="이동할 URL을 입력하세요 (예: https://adsense.google.com)">
-                        <button id="go-btn" class="btn btn-secondary">이동</button>
-                    </div>
-                    <div class="browser-frame-container">
-                        <iframe id="browser-frame" src="about:blank" frameborder="0"></iframe>
-                        <div id="browser-placeholder" class="frame-overlay">
-                            <p>브라우저를 활성화하려면 URL을 입력하십시오. 🌐</p>
-                            <small>※ 일부 보안 강화 사이트는 프레임 내 표시가 제한될 수 있습니다.</small>
+                <!-- APP BROWSER VIEW -->
+                <section id="browser-view" class="view-section hidden">
+                    <div class="browser-ui">
+                        <div class="url-bar">
+                            <input type="text" id="browser-url" placeholder="https://adsense.google.com">
+                            <button id="browser-go">이동</button>
+                        </div>
+                        <div class="iframe-container">
+                            <iframe id="target-frame" src="about:blank"></iframe>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </main>
+
+        <!-- [RIGHT] UTILITY SIDEBAR -->
+        <aside class="util-sidebar">
+            <div class="util-section">
+                <h4>나의 라이브러리</h4>
+                <div id="saved-prompts" class="saved-list">
+                    <!-- Saved items go here -->
+                    <div class="empty-status">저장된 프롬프트가 없습니다. 🐟</div>
+                </div>
+            </div>
+            <div class="util-section">
+                <h4>추천 광고/도구</h4>
+                <div class="ad-placeholder">
+                    <span>Ads Placeholder</span>
+                </div>
+            </div>
+        </aside>
     </div>
 
-    <!-- Modal / Notifications (Kodari Support) -->
-    <div id="kodari-toast" class="toast hidden">
-        <div class="toast-content">
+    <!-- NOTIFICATION SYSTEM -->
+    <div id="notif-system" class="notif-container hidden">
+        <div class="notif-box">
             <img src="https://raw.githubusercontent.com/wonseokjung/solopreneur-ai-agents/main/agents/kodari/assets/kodari_salute.png"
-                alt="코다리" class="toast-img">
-            <p id="toast-message">충성! 부장 코다리입니다!</p>
+                alt="KODARI">
+            <span id="notif-text">메시지가 여기에 옵니다.</span>
         </div>
     </div>
 
