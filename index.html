@@ -4,159 +4,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KODARI AI Prompt Browser | 가치를 만드는 공간</title>
+    <title>ProVision AI | Premium Prompt Studio</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700&display=swap"
         rel="stylesheet">
 </head>
 
-<body class="nebula-theme">
-    <div class="app-layout">
-        <!-- [LEFT] NAVIGATION -->
-        <aside class="nav-sidebar">
-            <div class="brand">
-                <div class="brand-logo">🐟</div>
-                <h1 class="brand-name">KODARI</h1>
+<body class="luminal-theme">
+    <div class="app-container">
+        <!-- GLOBAL NAVIGATION -->
+        <nav class="side-nav">
+            <div class="nav-brand">
+                <div class="logo-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                    </svg>
+                </div>
+                <span class="brand-text">ProVision AI</span>
             </div>
-            <nav class="primary-nav">
-                <button class="nav-link active" data-view="dashboard">
-                    <span class="nav-icon">✨</span>
-                    <span class="nav-label">프롬프트 빌더</span>
+            <div class="nav-menu">
+                <button class="menu-item active" data-view="studio">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                    </svg>
+                    <span>Studio</span>
                 </button>
-                <button class="nav-link" data-view="browser">
-                    <span class="nav-icon">🌐</span>
-                    <span class="nav-label">앱 브라우저</span>
+                <button class="menu-item" data-view="discovery">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="M21 21l-4.35-4.35" />
+                    </svg>
+                    <span>Discovery</span>
                 </button>
-                <button class="nav-link" data-view="analytics">
-                    <span class="nav-icon">📊</span>
-                    <span class="nav-label">수익 통계</span>
+                <button class="menu-item" data-view="navigator">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M16.24 7.76l-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z" />
+                    </svg>
+                    <span>Navigator</span>
                 </button>
-            </nav>
-            <div class="nav-footer">
-                <div class="user-badge">
-                    <div class="status-dot"></div>
-                    <span class="user-name">AI Representative</span>
+            </div>
+            <div class="nav-bottom">
+                <div class="profile-card">
+                    <div class="avatar-placeholder">R</div>
+                    <div class="profile-info">
+                        <p class="p-name">Representative</p>
+                        <p class="p-role">Verified Partner</p>
+                    </div>
                 </div>
             </div>
-        </aside>
+        </nav>
 
-        <!-- [CENTER] MAIN CONTENT -->
-        <main class="main-viewport">
-            <header class="view-header">
-                <div class="header-content">
-                    <h2 id="view-title">프롬프트 빌더</h2>
-                    <div class="trending-ticker">
-                        <span class="ticker-label">HOT STYLES:</span>
-                        <div class="ticker-content">
-                            <span>#CyberpunkUE5</span>
-                            <span>#VanGoghOil</span>
-                            <span>#Pixar3DRender</span>
-                            <span>#HyperRealistic</span>
-                        </div>
+        <!-- MAIN VIEWPORT -->
+        <main class="main-content">
+            <header class="top-header">
+                <h2 id="current-view-title">Prompt Studio</h2>
+                <div class="top-actions">
+                    <div class="trending-badge">
+                        <span class="badge-dot"></span>
+                        Trending: Hyper-realistic 8K
                     </div>
+                    <button class="btn-theme-toggle">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                        </svg>
+                    </button>
                 </div>
             </header>
 
-            <div id="content-container">
-                <!-- AI PROMPT BUILDER -->
-                <section id="dashboard-view" class="view-section">
-                    <div class="builder-card">
-                        <div class="card-header">
-                            <h3>Magic Prompt Generator</h3>
-                            <p>선택만 하세요. 나머지는 부장 코다리가 처리합니다.</p>
-                        </div>
-                        <div class="builder-controls">
-                            <div class="select-group">
-                                <label>Subject</label>
-                                <select id="p-subject">
-                                    <option value="A mystical cyborg phoenix rising from ashes">잿더미에서 살아나는 기계 불사조
-                                    </option>
-                                    <option value="A serene garden floating in high nebula">우주 성운 속의 평화로운 정원</option>
-                                    <option value="Infinite library with books flying like birds">새처럼 날아다니는 책들이 있는 영원의
-                                        도서관</option>
-                                    <option value="Cyberpunk street in Seoul, heavy rain">폭우가 쏟아지는 서울의 사이버펑크 거리</option>
-                                </select>
+            <div class="scroll-area">
+                <!-- STUDIO VIEW (BUILDER) -->
+                <section id="studio-view" class="view-panel active">
+                    <div class="studio-grid">
+                        <div class="builder-section">
+                            <div class="section-card">
+                                <div class="card-header">
+                                    <h3>Advanced Prompt Engine</h3>
+                                    <p>전문가 수준의 AI 명령어를 직관적으로 생성하세요.</p>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="field-box">
+                                        <label>Subject</label>
+                                        <select id="sel-subject">
+                                            <option value="A futuristic architecture inspired by nature">자연에서 영감을 얻은 미래형
+                                                건축물</option>
+                                            <option value="A serene mountain lake at dawn, mist">물안개가 핀 새벽의 평화로운 산정 호수
+                                            </option>
+                                            <option value="Portrait of a cybernetic goddess, golden jewelry">황금 장신구를 착용한
+                                                기계 여신의 초상</option>
+                                            <option value="Abstract fluid art, iridescent colors">몽환적인 유체 예술, 무지갯빛 색상
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="field-box">
+                                        <label>Style & Medium</label>
+                                        <select id="sel-style">
+                                            <option value="Unreal Engine 5 render, cinematic lighting, 8k">언리얼 엔진 5 렌더링,
+                                                시네마틱 조명</option>
+                                            <option value="Minimalist oil painting, thick brushstrokes">미니멀리스트 유화, 질감 강조
+                                            </option>
+                                            <option value="Vogue editorial photography, sharp focus">보그 스타일 화보 사진, 선명한
+                                                초점</option>
+                                            <option value="3D claymation style, cute characters">3D 클레이메이션 스타일, 귀여운 캐릭터
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="field-box">
+                                        <label>Atmosphere</label>
+                                        <select id="sel-light">
+                                            <option value="Golden hour, warm glow, long shadows">골든 아워, 따뜻한 빛, 긴 그림자
+                                            </option>
+                                            <option value="Bioluminescent, glowing neon accents">발광 생명체 스타일, 네온 포인트
+                                            </option>
+                                            <option value="High contrast noir, dramatic shadows">고대비 누아르, 극적인 그림자
+                                            </option>
+                                            <option value="Soft bokeh, ethereal dreamlike feel">부드러운 보케, 몽환적인 분위기
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="result-container">
+                                    <textarea id="output-text" readonly
+                                        placeholder="빌더 옵션을 선택하면 결과가 여기에 표시됩니다."></textarea>
+                                    <div class="button-row">
+                                        <button id="btn-copy" class="btn btn-primary">Copy Prompt 📋</button>
+                                        <button id="btn-save" class="btn btn-secondary">Save to Library ⭐</button>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="select-group">
-                                <label>Art Style</label>
-                                <select id="p-style">
-                                    <option value="Hyper-realistic, Unreal Engine 5 render, 8k">하이퍼 리얼리즘 (UE5)</option>
-                                    <option value="Vibrant watercolor painting, soft edges">선명한 수채화 풍</option>
-                                    <option value="Retro synthwave aesthetic, neon colors">레트로 신스웨이브</option>
-                                    <option value="Minimalist vector illustration">미니멀리스트 벡터 일러스트</option>
-                                </select>
-                            </div>
-                            <div class="select-group">
-                                <label>Lighting</label>
-                                <select id="p-lighting">
-                                    <option value="Cinematic rim light, moody shadow">시네마틱 림 라이트</option>
-                                    <option value="Soft morning sunlight via window">창가로 들어오는 부드러운 아침 햇살</option>
-                                    <option value="Bioluminescent glow, magical atmosphere">발광 생명체의 신비로운 빛</option>
-                                    <option value="Harsh noir high-contrast">강렬한 누아르 대비</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="prompt-output">
-                            <textarea id="prompt-result" readonly></textarea>
-                            <div class="output-actions">
-                                <button id="copy-btn" class="btn-action primary">포인트로 복사하기 📋</button>
-                                <button id="save-btn" class="btn-action secondary">라이브러리에 저장 ⭐</button>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="gallery-wrapper">
-                        <div class="wrapper-header">
-                            <h4>Trending AI Masterpieces</h4>
-                            <button class="btn-link">더 보기 →</button>
+                            <div class="discovery-preview">
+                                <div class="preview-header">
+                                    <h4>Community Discovery</h4>
+                                    <span class="link-text">Explore more</span>
+                                </div>
+                                <div id="feed-container" class="preview-grid">
+                                    <!-- Dynamic Content -->
+                                </div>
+                            </div>
                         </div>
-                        <div id="image-feed" class="image-grid">
-                            <!-- JS Injection -->
-                        </div>
+
+                        <!-- RIGHT SIDEBAR (LIBRARY) -->
+                        <aside class="utility-rail">
+                            <div class="rail-card">
+                                <h4>My Library</h4>
+                                <div id="library-list" class="item-list">
+                                    <div class="empty-list">No saved prompts yet.</div>
+                                </div>
+                            </div>
+                            <div class="rail-card promo">
+                                <h4>Pro Tools</h4>
+                                <div class="promo-box">
+                                    <p>Unlock advanced features and high-value keywords.</p>
+                                    <button class="btn btn-outline btn-sm">Upgrade Now</button>
+                                </div>
+                            </div>
+                        </aside>
                     </div>
                 </section>
 
-                <!-- APP BROWSER VIEW -->
-                <section id="browser-view" class="view-section hidden">
-                    <div class="browser-ui">
-                        <div class="url-bar">
-                            <input type="text" id="browser-url" placeholder="https://adsense.google.com">
-                            <button id="browser-go">이동</button>
+                <!-- NAVIGATOR VIEW (BROWSER) -->
+                <section id="navigator-view" class="view-panel">
+                    <div class="browser-wrapper">
+                        <div class="address-strip">
+                            <input type="text" id="url-input" placeholder="Enter target URL (e.g., adsense.google.com)">
+                            <button id="btn-go">Go</button>
                         </div>
-                        <div class="iframe-container">
-                            <iframe id="target-frame" src="about:blank"></iframe>
+                        <div class="frame-host">
+                            <iframe id="main-frame" src="about:blank"></iframe>
                         </div>
                     </div>
                 </section>
             </div>
         </main>
-
-        <!-- [RIGHT] UTILITY SIDEBAR -->
-        <aside class="util-sidebar">
-            <div class="util-section">
-                <h4>나의 라이브러리</h4>
-                <div id="saved-prompts" class="saved-list">
-                    <!-- Saved items go here -->
-                    <div class="empty-status">저장된 프롬프트가 없습니다. 🐟</div>
-                </div>
-            </div>
-            <div class="util-section">
-                <h4>추천 광고/도구</h4>
-                <div class="ad-placeholder">
-                    <span>Ads Placeholder</span>
-                </div>
-            </div>
-        </aside>
     </div>
 
-    <!-- NOTIFICATION SYSTEM -->
-    <div id="notif-system" class="notif-container hidden">
-        <div class="notif-box">
-            <img src="https://raw.githubusercontent.com/wonseokjung/solopreneur-ai-agents/main/agents/kodari/assets/kodari_salute.png"
-                alt="KODARI">
-            <span id="notif-text">메시지가 여기에 옵니다.</span>
+    <!-- CLEAN NOTIFICATION -->
+    <div id="toast" class="toast-system hidden">
+        <div class="toast-content">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5">
+                <path d="M20 6L9 17l-5-5" />
+            </svg>
+            <span id="toast-msg">Success Message</span>
         </div>
     </div>
 
