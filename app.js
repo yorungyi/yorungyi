@@ -111,6 +111,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const input = rawInput.toLowerCase();
 
+        // 6a. Korean to English Translation Engine
+        function translateToEnglish(text) {
+            const dictionary = {
+                '강아지': 'dog', '강아지가': 'a dog', '흰색': 'white', '노는': 'playing', '수영장': 'swimming pool',
+                '수영장에서': 'in a swimming pool', '모습': 'scene', '고양이': 'cat', '고양이가': 'a cat',
+                '건물': 'building', '도시': 'city', '석양': 'sunset', '하늘': 'sky', '바다': 'ocean',
+                '숲': 'forest', '꽃': 'flower', '산': 'mountain', '우주': 'space', '인간': 'human',
+                '로봇': 'robot', '기계': 'machine', '여신': 'goddess', '전사': 'warrior', '사무라이': 'samurai',
+                '벚꽃': 'cherry blossom', '네온': 'neon', '미래': 'future', '전통': 'traditional',
+                '럭셔리': 'luxury', '스포츠카': 'sports car', '우주 정거장': 'space station', '바이킹': 'viking',
+                '수정 궁전': 'crystal palace', '시간 여행자': 'time traveler', '불사조': 'phoenix',
+                '달리는': 'running', '웃는': 'smiling', '요리하는': 'cooking', '비행하는': 'flying',
+                '아름다운': 'beautiful', '장엄한': 'majestic', '화려한': 'vibrant', '어두운': 'dark',
+                '차가운': 'cold', '따뜻한': 'warm', '신비로운': 'mystical'
+            };
+
+            let translated = text;
+            // Sorting by length descending to match longer phrases first
+            const sortedKeys = Object.keys(dictionary).sort((a, b) => b.length - a.length);
+
+            sortedKeys.forEach(kr => {
+                const regex = new RegExp(kr, 'g');
+                translated = translated.replace(regex, dictionary[kr]);
+            });
+
+            // Remove common Korean particles if they remain
+            translated = translated.replace(/[이가을를은는]/g, ' ').replace(/\s+/g, ' ').trim();
+
+            return translated;
+        }
+
+        const translatedInput = translateToEnglish(rawInput);
+
         // Keyword analysis
         const subjectKeywords = {
             architecture: ['building', '건물', 'architecture', '건축', 'tower', '타워', 'house', '집', 'castle', '성'],
@@ -174,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const aspectVal = selAspect.value;
         const engineLabel = selEngine.options[selEngine.selectedIndex].text;
 
-        let enhancedPrompt = `${detectedSubject} featuring ${rawInput.trim()}, ${detectedStyle}, ${detectedAtmosphere}, masterfully crafted, award-winning quality`;
+        let enhancedPrompt = `${detectedSubject} featuring ${translatedInput}, ${detectedStyle}, ${detectedAtmosphere}, masterfully crafted, award-winning quality`;
 
         // Append Pro Parameters
         if (negInput) enhancedPrompt += ` --no ${negInput}`;
