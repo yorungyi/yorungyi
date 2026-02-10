@@ -177,16 +177,25 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast('✨ AI has enhanced your prompt!');
     }
 
-    btnEnhance.addEventListener('click', () => {
-        enhancePrompt(userInput.value.trim());
-    });
+    if (btnEnhance && userInput) {
+        console.log('AI Enhancement button found, attaching handlers');
+        btnEnhance.addEventListener('click', () => {
+            console.log('Enhance button clicked!');
+            const rawText = userInput.value.trim();
+            console.log('User input:', rawText);
+            enhancePrompt(rawText);
+        });
 
-    userInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            btnEnhance.click();
-        }
-    });
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                console.log('Enter key pressed in user input');
+                btnEnhance.click();
+            }
+        });
+    } else {
+        console.error('AI Enhancement elements not found!', { btnEnhance, userInput });
+    }
 
     // 6. User Actions
     btnCopy.addEventListener('click', () => {
@@ -220,30 +229,30 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
-    // 7. MASSIVELY Expanded Gallery Data (120+ Images)
+    // 7. MASSIVELY Expanded Gallery Data with Professional Prompts
     function generateGalleryData() {
         return [
-            // Architecture (15 items)
-            { id: 1, category: 'Architecture', title: 'Neo Brutalist Tower', url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=90', prompt: 'Neo-brutalist concrete tower, angular design, golden hour light, architectural photography, ultra sharp, 8k' },
-            { id: 2, category: 'Architecture', title: 'Parametric Pavilion', url: 'https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=800&q=90', prompt: 'Parametric architecture pavilion, fluid organic forms, white material, minimal lighting, hyper-detailed' },
-            { id: 3, category: 'Architecture', title: 'Glass Skyscraper', url: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&q=90', prompt: 'Modern glass skyscraper, reflective facade, blue hour photography, cityscape, crystal clear' },
-            { id: 4, category: 'Architecture', title: 'Minimalist House', url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=90', prompt: 'Contemporary minimalist house, clean lines, natural wood, large windows, architectural digest' },
-            { id: 5, category: 'Architecture', title: 'Gothic Cathedral', url: 'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=800&q=90', prompt: 'Gothic cathedral interior, vaulted ceiling, stained glass, dramatic light rays, highly detailed' },
-            { id: 6, category: 'Architecture', title: 'Futuristic Bridge', url: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=90', prompt: 'Futuristic suspension bridge, steel and cable, symmetrical composition, engineering marvel' },
-            { id: 7, category: 'Architecture', title: 'Asian Temple', url: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&q=90', prompt: 'Traditional Asian temple, curved roofs, red lanterns, serene atmosphere, cultural heritage' },
-            { id: 8, category: 'Architecture', title: 'Industrial Warehouse', url: 'https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?w=800&q=90', prompt: 'Converted industrial warehouse, exposed brick, high ceilings, urban loft aesthetic' },
-            { id: 9, category: 'Architecture', title: 'Art Deco Building', url: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=800&q=90', prompt: 'Art deco building facade, geometric patterns, vintage elegance, 1920s architecture' },
-            { id: 10, category: 'Architecture', title: 'Desert Villa', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=90', prompt: 'Luxury desert villa, infinity pool, palm trees, modern minimalism, sunset ambiance' },
-            { id: 11, category: 'Architecture', title: 'Spiral Staircase', url: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&q=90', prompt: 'Elegant spiral staircase, marble steps, ornate railings, architectural detail' },
-            { id: 12, category: 'Architecture', title: 'Dome Structure', url: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800&q=90', prompt: 'Grand dome interior, intricate patterns, Islamic architecture, golden accents' },
-            { id: 13, category: 'Architecture', title: 'Modern Library', url: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&q=90', prompt: 'Contemporary library design, floor-to-ceiling books, reading spaces, warm lighting' },
-            { id: 14, category: 'Architecture', title: 'Concrete Brutalism', url: 'https://images.unsplash.com/photo-1511818966892-d7d671e672a2?w=800&q=90', prompt: 'Brutalist concrete building, raw texture, bold geometry, urban architecture' },
-            { id: 15, category: 'Architecture', title: 'Rooftop Garden', url: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=800&q=90', prompt: 'Urban rooftop garden, green oasis, modern planters, city skyline views' },
+            // Architecture (15 items) - Enhanced Professional Prompts
+            { id: 1, category: 'Architecture', title: 'Neo Brutalist Tower', url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=90', prompt: 'Neo-brutalist concrete tower, angular geometric design, raw exposed concrete texture, golden hour natural lighting, architectural photography, Nikon D850, 24mm tilt-shift lens, f/8 aperture, ultra sharp focus, professional commercial photography, 8k resolution, award-winning architectural digest style, dramatic sky backdrop, symmetrical composition' },
+            { id: 2, category: 'Architecture', title: 'Parametric Pavilion', url: 'https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=800&q=90', prompt: 'Parametric architecture pavilion, fluid organic forms inspired by Zaha Hadid, white matte material surface, computational design, minimal ambient lighting, hyper-detailed 3D rendering, Unreal Engine 5, ray tracing enabled, photorealistic materials, professional architectural visualization, 8k ultra HD, clean minimalist aesthetic, soft shadows' },
+            { id: 3, category: 'Architecture', title: 'Glass Skyscraper', url: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&q=90', prompt: 'Modern glass skyscraper, reflective curtain wall facade, blue hour photography timing, cityscape urban environment, Canon EOS R5, 16-35mm wide-angle lens, long exposure technique, crystal clear reflections, professional real estate photography, 8k resolution, vibrant blue tones, vertical composition, commercial architecture' },
+            { id: 4, category: 'Architecture', title: 'Minimalist House', url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=90', prompt: 'Contemporary minimalist residential house, clean geometric lines, natural wood cladding material, large floor-to-ceiling windows, warm interior lighting, architectural photography, Sony A7R IV, 24-70mm lens, f/5.6 aperture, professional interior design magazine quality, ultra detailed textures, 8k sharp resolution, Scandinavian design aesthetic' },
+            { id: 5, category: 'Architecture', title: 'Gothic Cathedral', url: 'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=800&q=90', prompt: 'Gothic cathedral interior architecture, soaring vaulted ribbed ceiling, magnificent stained glass windows, dramatic divine light rays streaming through, European medieval architecture, professional heritage photography, Canon 5D Mark IV, 14mm ultra-wide lens, HDR technique, hyper-detailed stone masonry, 8k resolution, majestic atmospheric mood, UNESCO world heritage quality' },
+            { id: 6, category: 'Architecture', title: 'Futuristic Bridge', url: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=90', prompt: 'Futuristic suspension bridge engineering, steel cable architecture, symmetrical geometric composition, modern infrastructure design, drone aerial photography, DJI Mavic 3 Pro, 24mm equivalent lens, f/5.6 aperture, sharp detailed engineering marvel, professional architectural magazine, 8k ultra resolution, perfect symmetry, blue hour lighting' },
+            { id: 7, category: 'Architecture', title: 'Asian Temple', url: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&q=90', prompt: 'Traditional Asian temple architecture, curved pagoda roofs, red paper lanterns, serene peaceful atmosphere, cultural heritage site, travel photography, Fujifilm X-T4, 35mm lens, natural lighting, ultra detailed traditional craftsmanship, professional National Geographic style, 8k resolution, warm color grading, authentic cultural documentation' },
+            { id: 8, category: 'Architecture', title: 'Industrial Warehouse', url: 'https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?w=800&q=90', prompt: 'Converted industrial warehouse loft, exposed red brick walls, soaring high ceilings, urban modern aesthetic, interior design photography, Canon EOS R6, 16-35mm wide lens, natural window light, professional real estate photography, 8k sharp resolution, industrial chic style, architectural digest quality, trendy urban living space' },
+            { id: 9, category: 'Architecture', title: 'Art Deco Building', url: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=800&q=90', prompt: 'Art Deco building facade, geometric zigzag patterns, vintage 1920s elegance, heritage architecture, architectural detail photography, Phase One XF IQ4, 80mm lens, golden hour natural light, ultra detailed ornamental features, professional heritage documentation, 8k resolution, period accurate vintage color grading, architectural preservation quality' },
+            { id: 10, category: 'Architecture', title: 'Desert Villa', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=90', prompt: 'Luxury desert villa architecture, infinity edge swimming pool, tropical palm trees landscape, modern minimalist design aesthetic, sunset golden hour timing, real estate photography, Sony A1, 24-70mm lens, f/8 aperture, professional luxury property marketing, 8k ultra HD resolution, warm ambient lighting, architectural digest cover quality' },
+            { id: 11, category: 'Architecture', title: 'Spiral Staircase', url: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&q=90', prompt: 'Elegant spiral staircase architecture, white marble steps, ornate wrought iron railings, architectural detail close-up, interior design photography, Nikon Z9, 85mm lens, soft diffused lighting, ultra sharp architectural detail, professional interior magazine, 8k resolution, classic timeless elegance, vertical composition' },
+            { id: 12, category: 'Architecture', title: 'Dome Structure', url: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800&q=90', prompt: 'Grand mosque dome interior, intricate Islamic geometric patterns, golden metallic accents, traditional Islamic architecture, cultural heritage photography, Canon 5DS R, 14mm ultra-wide lens, HDR bracketing technique, hyper-detailed ornamental craftsmanship, professional UNESCO heritage quality, 8k resolution, warm ambient lighting, majestic symmetrical composition' },
+            { id: 13, category: 'Architecture', title: 'Modern Library', url: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&q=90', prompt: 'Contemporary public library interior, floor-to-ceiling bookshelves, modern reading spaces, warm ambient lighting design, architectural interior photography, Sony A7R V, 24mm tilt-shift lens, professional cultural space documentation, ultra detailed wood textures, 8k sharp resolution, inviting atmosphere, architectural photography award quality' },
+            { id: 14, category: 'Architecture', title: 'Concrete Brutalism', url: 'https://images.unsplash.com/photo-1511818966892-d7d671e672a2?w=800&q=90', prompt: 'Brutalist concrete architecture, raw exposed aggregate texture, bold geometric forms, urban modernist design, architectural photography, Leica M11, 28mm lens, dramatic sky contrast, ultra detailed concrete surface, professional architectural documentation, 8k resolution, monochromatic color palette, striking angular composition' },
+            { id: 15, category: 'Architecture', title: 'Rooftop Garden', url: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=800&q=90', prompt: 'Urban rooftop garden oasis, modern sustainable design, contemporary planters, city skyline panoramic views, landscape architecture photography, Canon EOS R5, 16-35mm wide lens, golden hour natural light, professional landscape architecture magazine, 8k resolution, vibrant greenery, eco-friendly urban living, architectural digest quality' },
 
-            // Nature (20 items)
-            { id: 16, category: 'Nature', title: 'Mountain Mist', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=90', prompt: 'Misty mountain peak at dawn, soft purple and orange light, ethereal atmosphere, landscape photography' },
-            { id: 17, category: 'Nature', title: 'Desert Dunes', url: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&q=90', prompt: 'Vast sand dunes, golden hour, long shadows, minimalist composition' },
-            { id: 18, category: 'Nature', title: 'Coastal Cliffs', url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=90', prompt: 'Dramatic coastal cliffs, crashing waves, moody sky, wide angle lens' },
+            // Nature (20 items) - Enhanced Professional Prompts
+            { id: 16, category: 'Nature', title: 'Mountain Mist', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=90', prompt: 'Misty mountain peak at dawn, soft purple and orange gradient light, ethereal atmospheric haze, epic landscape photography, Phase One XF IQ4, 35mm lens, f/11 aperture, long exposure technique, professional National Geographic quality, 8k ultra HD resolution, majestic natural beauty, cinematic color grading, award-winning landscape photography' },
+            { id: 17, category: 'Nature', title: 'Desert Dunes', url: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&q=90', prompt: 'Vast Sahara sand dunes, golden hour warm lighting, dramatic long shadows, minimalist zen composition, landscape photography, Sony A1, 70-200mm telephoto lens, f/8 aperture, ultra detailed sand texture, professional travel photography, 8k sharp resolution, warm earth tones, serene desert landscape, National Geographic explorer quality' },
+            { id: 18, category: 'Nature', title: 'Coastal Cliffs', url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=90', prompt: 'Dramatic coastal sea cliffs, powerful crashing waves, moody stormy sky, epic seascape, wide angle landscape photography, Nikon D850, 14-24mm ultra-wide lens, f/16 aperture, ND filter long exposure, professional dramatic nature photography, 8k resolution, cinematic atmosphere, dynamic composition, weather photography award quality' },
             { id: 19, category: 'Nature', title: 'Aurora Borealis', url: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800&q=90', prompt: 'Northern lights over snowy landscape, green and purple aurora, starry sky' },
             { id: 20, category: 'Nature', title: 'Tropical Waterfall', url: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=800&q=90', prompt: 'Hidden tropical waterfall, lush jungle, emerald pool, misty atmosphere' },
             { id: 21, category: 'Nature', title: 'Cherry Blossoms', url: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&q=90', prompt: 'Cherry blossom trees in full bloom, pink petals, spring season, soft bokeh' },
